@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CityServicesActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/TSRTCText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:paddingRight="20dp"
+            android:text="T S R T C"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            tools:layout_editor_absoluteX="61dp"
+            tools:layout_editor_absoluteY="18dp" />
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="35dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/back_icon"
+            android:textSize="15sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/toolBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/toolBar"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBar">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
+                android:text="Hyderabad City Services"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/cityOrdinary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/titleTextView"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="City Ordinary"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/CO1"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/cityOrdinary"
+                android:layout_marginTop="20dp"
+                android:contentDescription="City Ordinary"
+                app:srcCompat="@mipmap/co1" />
+
+            <ImageView
+                android:id="@+id/CO2"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/CO1"
+                android:layout_marginTop="20dp"
+                android:contentDescription="City Ordinary"
+                app:srcCompat="@mipmap/co2" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/CO2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/city_ordinary_details"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/expressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textView4"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:text="Metro Express"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/ME1"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/expressText"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Express"
+                app:srcCompat="@mipmap/me1" />
+
+            <ImageView
+                android:id="@+id/ME2"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/ME1"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Express"
+                app:srcCompat="@mipmap/me2" />
+
+            <TextView
+                android:id="@+id/metext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ME2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/metro_express_details"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/deluxetitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/metext"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:text="Metro Deluxe"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/MD1"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/deluxetitle"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Deluxe"
+                app:srcCompat="@mipmap/md1" />
+
+            <ImageView
+                android:id="@+id/MD2"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/MD1"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Deluxe"
+                app:srcCompat="@mipmap/md2" />
+
+            <TextView
+                android:id="@+id/mdtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/MD2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/metro_deluxe_details"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/lftitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mdtext"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:text="City Sheetal (Low-Floor AC)"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/LF1"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/lftitle"
+                android:layout_marginTop="20dp"
+                android:contentDescription="City Sheetal"
+                app:srcCompat="@mipmap/lf1" />
+
+            <ImageView
+                android:id="@+id/LF2"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/LF1"
+                android:layout_marginTop="20dp"
+                android:contentDescription="City Sheetal"
+                app:srcCompat="@mipmap/lf2" />
+
+            <TextView
+                android:id="@+id/lftext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LF2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/city_sheetal_details"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/lxactitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lftext"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:text="Metro Luxury AC (Volvo)"
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/LXAC1"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/lxactitle"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Luxury AC"
+                app:srcCompat="@mipmap/lxac1" />
+
+            <ImageView
+                android:id="@+id/LXAC2"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/LXAC1"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Metro Luxury AC"
+                app:srcCompat="@mipmap/lxac2" />
+
+            <TextView
+                android:id="@+id/lxactext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/LXAC2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:text="@string/metro_luxury_ac_details"
+                android:textSize="16sp" />
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
