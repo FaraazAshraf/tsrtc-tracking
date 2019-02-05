@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -66,7 +65,8 @@ public class SingleBusActivity extends AppCompatActivity {
         busRegNumString = busRegNumString.replace("TS07Z3998", "AP11Z3998").replace("TS07Z4017", "AP11Z4017")
                 .replace("TS07Z4015", "AP11Z4015").replace("TS07Z3998", "AP11Z4040")
                 .replace("TS07Z4041", "AP11Z4041").replace("TS07Z4046", "AP11Z4046")
-                .replace("TS07Z4039", "AP11Z4039");
+                .replace("TS07Z4039", "AP11Z4039").replace("TS07Z4004", "AP7Z4004")
+                .replace("TS07Z4020", "AP7Z4020").replace("TS07Z4008", "AP07Z4008");
 
         busesAndIDs = populateDictionaryBusesAndIDs();
 
@@ -77,7 +77,8 @@ public class SingleBusActivity extends AppCompatActivity {
         busRegNumString = busRegNumString.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                 .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                 .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                .replace("AP11Z4039", "TS07Z4039");
+                .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
 
         mainTextView.setText("Searching...");
         if(connectedToInternet())
@@ -215,7 +216,10 @@ public class SingleBusActivity extends AppCompatActivity {
                 });
                 gpsButton.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
-                        startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.google.com/maps/place/"+gpsCoords+"/@"+gpsCoords+",12z")));
+                        //startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.google.com/maps/place/"+gpsCoords+"/@"+gpsCoords+",12z")));
+                        Intent tracking = new Intent(SingleBusActivity.this, ViewLocationActivity.class);
+                        tracking.putExtra("busID", busIDString);
+                        startActivity(tracking);
                     }
                 });
 

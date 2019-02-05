@@ -109,8 +109,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                 else {
                     if(connectedToInternet()) {
                         new LogAction(chosenRoute).start();
-                        if(chosenRoute.contains("/"))
-                            chosenRoute = chosenRoute.split("/")[0];
+                        chosenRoute = chosenRoute.split(" ")[0].split("/")[0];
                         noBusesTextView.setVisibility(View.INVISIBLE);
                         validBuses.clear();
                         validStops.clear();
@@ -317,7 +316,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                                                     + busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                                                     .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                                                     .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                                    .replace("AP11Z4039", "TS07Z4039") + "   -   " + busType + "\n" +
+                                                    .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                                                    .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008") + "   -   " + busType + "\n" +
                                                     "Route:  " + allRoutes[i].split(",")[0] + "\n" +
                                                     "Towards: " + destination + "\n" +
                                                     "Next stop: " + nextStop
@@ -460,6 +460,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                         Toast.makeText(SearchBusesOnRouteActivity.this, "Route not found.", Toast.LENGTH_LONG).show();
                         actionTextView.setVisibility(View.INVISIBLE);
                         progressBar.setVisibility(View.INVISIBLE);
+                        scanButtonMethod1.setVisibility(View.VISIBLE);
+                        scanButtonMethod2.setVisibility(View.VISIBLE);
                     }
                 });
                 noBusesTextView.setVisibility(View.INVISIBLE);
@@ -539,7 +541,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                                 String buttonText = "\n" + busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                                         .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                                         .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                        .replace("AP11Z4039", "TS07Z4039") + "   -   " + busType +
+                                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008") + "   -   " + busType +
                                         "\nRoute: " + allBuses[n].split(",")[2] +
                                         "\nTowards: " + allBuses[n].split(",")[3] +
                                         "\nNext stop: " + nextStop + " at " + nextStopETA + "\n";
@@ -609,7 +612,6 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         noBusesTextView.setVisibility(View.VISIBLE);
-
                     }
                 });
             }
@@ -773,7 +775,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
             String currentDate = new SimpleDateFormat("MM-dd HH:mm").format(new Date());
 
-            logString = currentDate + "-" + logString;
+            logString = currentDate + "- ROUTE: " + logString;
 
             try {
                 logString = URLEncoder.encode(logString, "UTF-8");

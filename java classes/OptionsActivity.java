@@ -48,6 +48,9 @@ public class OptionsActivity extends AppCompatActivity {
                 else if(id == R.id.cityInfo) {
                     startActivity(new Intent(OptionsActivity.this, CityServicesActivity.class));
                 }
+                else if(id == R.id.timings) {
+                    startActivity(new Intent(OptionsActivity.this, TimingsActivity.class));
+                }
                 else if(id == R.id.emergencyNos) {
                     new AlertDialog.Builder(OptionsActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -280,6 +283,36 @@ public class OptionsActivity extends AppCompatActivity {
                                 {
                                     public void onClick(DialogInterface dialog, int which) {
                                         startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://play.google.com/store/apps/details?id=com.ashraf.faraa.livebus")));
+                                    }
+
+                                }).show();
+                    }
+                });
+            }
+
+            try {
+                url = new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/message");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            urlContent = getContentFromURL(url);
+            if(urlContent.equals("0")) {
+                //do nothing, no msg to display
+            }
+            else {
+                final String finalUrlContent = urlContent;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(OptionsActivity.this)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle(finalUrlContent.split(";")[0])
+                                .setMessage(finalUrlContent.split(";")[1])
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                                {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
                                     }
 
                                 }).show();

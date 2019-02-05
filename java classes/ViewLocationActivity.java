@@ -1,16 +1,13 @@
 package com.ashraf.faraa.livebus;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -19,43 +16,51 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class AllStopsActivity extends AppCompatActivity {
+public class ViewLocationActivity extends AppCompatActivity {
 
-    LinearLayout stopsLinearLayout;
-    TextView titleTextView;
-    String busRegNum, busType;
+    WebView webView1;
+    WebView webView2;
     boolean keepRefreshing = true;
-    String busIDString;
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_stops);
+        setContentView(R.layout.activity_view_location);
 
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
 
-        busIDString = getIntent().getExtras().getString("busIDString");
-        stopsLinearLayout = findViewById(R.id.stopsLinearLayout);
+        webView1 = findViewById(R.id.webView1);
+        webView1.getSettings().setJavaScriptEnabled(true);
+        webView1.setVisibility(View.INVISIBLE);
 
-        busRegNum = getIntent().getExtras().getString("busRegNum");
-        busType = getIntent().getExtras().getString("busType");
+        webView2 = findViewById(R.id.webView2);
+        webView2.getSettings().setJavaScriptEnabled(true);
+        webView2.setVisibility(View.INVISIBLE);
 
-        titleTextView = findViewById(R.id.titleTextView);
+        webView1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true; //True if the listener has consumed the event, false otherwise.
+            }
+        });
 
-        busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                .replace("AP11Z4039", "TS07Z4039");
+        webView2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true; //True if the listener has consumed the event, false otherwise.
+            }
+        });
 
-        titleTextView.setText("Searching...");
+        String busID = getIntent().getExtras().getString("busID");
 
-        new AllStops(busIDString).execute();
-        new Refresh10Sec().start();
-
+        new StartTracking(busID).start();
+        new Refresh10Sec(busID).start();
     }
 
     public void onBackPressed() {
@@ -64,10 +69,17 @@ public class AllStopsActivity extends AppCompatActivity {
     }
 
     public class Refresh10Sec extends Thread {
+
+        String busID;
+
+        Refresh10Sec (String busID) {
+            this.busID = busID;
+        }
+
         public void run() {
             while(keepRefreshing) {
                 try {
-                    Thread.sleep(12000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -75,7 +87,7 @@ public class AllStopsActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new AllStops(busIDString).execute();
+                            new StartTracking(busID).start();
                         }
                     });
                 }
@@ -83,96 +95,77 @@ public class AllStopsActivity extends AppCompatActivity {
         }
     }
 
-    private class AllStops extends AsyncTask<Void, Void, Void> {
+    private class StartTracking extends Thread {
 
-        String busIDString;
-        String stopsDataUnformattedString;
-        String[] allStopsData;
+        String busID;
+        int count = 0;
 
-        public AllStops(String busIDString) {
-            this.busIDString = busIDString;
+        StartTracking(String busID) {
+            this.busID = busID;
         }
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-
+        public void run() {
             URL url = null;
 
-            try {
-                url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busIDString + "&flag=13");
-            } catch (MalformedURLException e) {
-                //should never happen
-            }
+            count++;
 
-            stopsDataUnformattedString = getContentFromURL(url);
-            allStopsData = stopsDataUnformattedString.split(";");
+            if(count % 2 == 0) {
+                try {
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busID + "&flag=21");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
 
-            return null;
-        }
+                final String gpsCoords = getContentFromURL(url).split(",")[6] + "," + getContentFromURL(url).split(",")[7];
 
-        protected void onPostExecute(Void aVoid) {
-            stopsLinearLayout.removeAllViews();
-
-            titleTextView.setText(busRegNum + "  -  " + busType);
-
-            if(stopsDataUnformattedString.equals("No records found.")) {
-                boolean noStops = true;
-                keepRefreshing = false;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(AllStopsActivity.this, "No stops found.", Toast.LENGTH_SHORT).show();
-                        finish();
+                        webView1.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",12z");
+                        webView1.setVisibility(View.INVISIBLE);
                     }
                 });
-                while(noStops) {
-                    //no stops data. activity must close.
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView2.setVisibility(View.INVISIBLE);
+                        webView1.setVisibility(View.VISIBLE);
+                    }
+                });
             }
             else {
-                int lastSeenAtStopIndex = 12345;
-                for (int i = (allStopsData.length) - 1; i >= 0; i--) {
-                    String singleStopData[] = allStopsData[i].split(",");
-                    if (singleStopData[2].equals("Y")) {
-                        lastSeenAtStopIndex = i;
-                        break;
-                    }
+                try {
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busID + "&flag=21");
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 }
 
-                for (int i = 0; i <= lastSeenAtStopIndex; i++) {
-                    Button b = new Button(AllStopsActivity.this);
-                    b.setBackgroundResource(R.drawable.passed);
-                    b.setTextSize(15);
-                    b.setTextColor(Color.BLACK);
+                final String gpsCoords = getContentFromURL(url).split(",")[6] + "," + getContentFromURL(url).split(",")[7];
 
-                    String stopName = allStopsData[i].split(",")[1];
-                    String passedTime = allStopsData[i].split(",")[4];
-                    if (passedTime.equalsIgnoreCase("null")) {
-                        b.setText(stopName + "  -  No record");
-                    } else {
-                        b.setText(stopName + "  -  passed at " + passedTime.substring(11, 16));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView2.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",12z");
+                        webView2.setVisibility(View.INVISIBLE);
                     }
-                    stopsLinearLayout.addView(b);
+                });
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
-                for (int i = lastSeenAtStopIndex + 1; i < allStopsData.length; i++) {
-                    Button b = new Button(AllStopsActivity.this);
-                    b.setBackgroundResource(R.drawable.yetto);
-                    b.setTextSize(15);
-                    b.setClickable(false);
-                    b.setTextColor(Color.BLACK);
-
-                    String stopName = allStopsData[i].split(",")[1];
-                    String passedTime = allStopsData[i].split(",")[4];
-
-                    if (passedTime.equalsIgnoreCase("null")) {
-                        b.setText(stopName + "  -  NO ETA");
-                    } else {
-                        b.setText(stopName + "  -  ETA " + passedTime.substring(11, 16));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView1.setVisibility(View.INVISIBLE);
+                        webView2.setVisibility(View.VISIBLE);
                     }
-
-                    stopsLinearLayout.addView(b);
-                }
+                });
             }
         }
     }
@@ -189,7 +182,7 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
+                    new AlertDialog.Builder(ViewLocationActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Internet error")
                             .setMessage("Please check your internet and try again.")
@@ -217,7 +210,7 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
+                    new AlertDialog.Builder(ViewLocationActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Internet error")
                             .setMessage("Please check your internet and try again.")
@@ -246,7 +239,7 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
+                    new AlertDialog.Builder(ViewLocationActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Internet error")
                             .setMessage("Please check your internet and try again.")
@@ -276,7 +269,7 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
+                    new AlertDialog.Builder(ViewLocationActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle("Internet error")
                             .setMessage("Please check your internet and try again.")

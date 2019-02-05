@@ -255,7 +255,8 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
                                     busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                                             .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                                             .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                            .replace("AP11Z4039", "TS07Z4039") + "   -   " + busType + "\n" +
+                                            .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                                            .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008") + "   -   " + busType + "\n" +
                                     "Route:  " + busRoute + "\n" +
                                     "Towards: " + busTowards + "\n" +
                                     "ETA to " + chosenStop + ": " + busETA
