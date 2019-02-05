@@ -35,7 +35,7 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/std_button"
         android:drawableLeft="@drawable/gps_icon"
-        android:text="show bus   \non map   "
+        android:text="track bus\non map"
         android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
