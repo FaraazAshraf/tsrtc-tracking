@@ -35,7 +35,7 @@
             app:srcCompat="@drawable/app_icon_bus_transparent" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/mainProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

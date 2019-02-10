@@ -73,7 +73,7 @@
                 android:layout_height="match_parent">
 
                 <Button
-                    android:id="@+id/numberplateSearchButton"
+                    android:id="@+id/openNumberplateSearchButton"
                     android:layout_width="155dp"
                     android:layout_height="75dp"
                     android:layout_alignParentTop="true"
@@ -85,10 +85,10 @@
                     android:textColor="@android:color/white" />
 
                 <Button
-                    android:id="@+id/busTypeAndDepotSearchButton"
+                    android:id="@+id/openBusTypeDepotSearchButton"
                     android:layout_width="155dp"
                     android:layout_height="75dp"
-                    android:layout_below="@id/numberplateSearchButton"
+                    android:layout_below="@id/openNumberplateSearchButton"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/std_button"
@@ -97,10 +97,10 @@
                     android:textColor="@android:color/white" />
 
                 <Button
-                    android:id="@+id/stopSearchButton"
+                    android:id="@+id/openStopSearchButton"
                     android:layout_width="155dp"
                     android:layout_height="75dp"
-                    android:layout_below="@id/busTypeAndDepotSearchButton"
+                    android:layout_below="@id/openBusTypeDepotSearchButton"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/std_button"
@@ -109,15 +109,39 @@
                     android:textColor="@android:color/white" />
 
                 <Button
-                    android:id="@+id/routeNumSearchButton"
+                    android:id="@+id/openRouteNumSearchButton"
                     android:layout_width="155dp"
                     android:layout_height="75dp"
-                    android:layout_below="@id/stopSearchButton"
+                    android:layout_below="@id/openStopSearchButton"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
                     android:background="@drawable/std_button"
                     android:drawableLeft="@drawable/search_icon"
-                    android:text="Search by\nroute num\n(hyd city)"
+                    android:text="Search by\nroute num\n(city buses)"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/openTimingsSearchButton"
+                    android:layout_width="155dp"
+                    android:layout_height="75dp"
+                    android:layout_below="@id/openRouteNumSearchButton"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/std_button"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:text="Search for\nbus timings"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/openLocateStopsButton"
+                    android:layout_width="155dp"
+                    android:layout_height="75dp"
+                    android:layout_below="@id/openTimingsSearchButton"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/std_button"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:text="Locate bus stops"
                     android:textColor="@android:color/white" />
 
 

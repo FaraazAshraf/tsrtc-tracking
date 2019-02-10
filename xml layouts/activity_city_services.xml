@@ -64,7 +64,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/titleTextView"
+                android:id="@+id/cityServicesTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -73,10 +73,10 @@
                 android:textSize="25sp" />
 
             <TextView
-                android:id="@+id/cityOrdinary"
+                android:id="@+id/cityOrdinaryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/titleTextView"
+                android:layout_below="@id/cityServicesTitleTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:text="City Ordinary"
@@ -87,7 +87,7 @@
                 android:id="@+id/CO1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_below="@id/cityOrdinary"
+                android:layout_below="@id/cityOrdinaryTextView"
                 android:layout_marginTop="20dp"
                 android:contentDescription="City Ordinary"
                 app:srcCompat="@mipmap/co1" />
@@ -102,7 +102,7 @@
                 app:srcCompat="@mipmap/co2" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/cityOrdinaryDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/CO2"
@@ -112,10 +112,10 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/expressText"
+                android:id="@+id/metroExpressTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textView4"
+                android:layout_below="@id/cityOrdinaryDetailsTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="Metro Express"
@@ -126,7 +126,7 @@
                 android:id="@+id/ME1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_below="@id/expressText"
+                android:layout_below="@id/metroExpressTitleTextView"
                 android:layout_marginTop="20dp"
                 android:contentDescription="Metro Express"
                 app:srcCompat="@mipmap/me1" />
@@ -141,7 +141,7 @@
                 app:srcCompat="@mipmap/me2" />
 
             <TextView
-                android:id="@+id/metext"
+                android:id="@+id/metroExpressDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/ME2"
@@ -151,10 +151,10 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/deluxetitle"
+                android:id="@+id/metroDeluxeTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/metext"
+                android:layout_below="@id/metroExpressDetailsTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="Metro Deluxe"
@@ -165,7 +165,7 @@
                 android:id="@+id/MD1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_below="@id/deluxetitle"
+                android:layout_below="@id/metroDeluxeTitleTextView"
                 android:layout_marginTop="20dp"
                 android:contentDescription="Metro Deluxe"
                 app:srcCompat="@mipmap/md1" />
@@ -180,7 +180,7 @@
                 app:srcCompat="@mipmap/md2" />
 
             <TextView
-                android:id="@+id/mdtext"
+                android:id="@+id/metroDeluxeDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/MD2"
@@ -190,10 +190,10 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/lftitle"
+                android:id="@+id/lowFloorTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/mdtext"
+                android:layout_below="@id/metroDeluxeDetailsTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="City Sheetal (Low-Floor AC)"
@@ -204,7 +204,7 @@
                 android:id="@+id/LF1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_below="@id/lftitle"
+                android:layout_below="@id/lowFloorTitleTextView"
                 android:layout_marginTop="20dp"
                 android:contentDescription="City Sheetal"
                 app:srcCompat="@mipmap/lf1" />
@@ -219,7 +219,7 @@
                 app:srcCompat="@mipmap/lf2" />
 
             <TextView
-                android:id="@+id/lftext"
+                android:id="@+id/lowFloorDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/LF2"
@@ -229,10 +229,10 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/lxactitle"
+                android:id="@+id/metroLuxuryTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/lftext"
+                android:layout_below="@id/lowFloorDetailsTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="40dp"
                 android:text="Metro Luxury AC (Volvo)"
@@ -243,7 +243,7 @@
                 android:id="@+id/LXAC1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_below="@id/lxactitle"
+                android:layout_below="@id/metroLuxuryTitleTextView"
                 android:layout_marginTop="20dp"
                 android:contentDescription="Metro Luxury AC"
                 app:srcCompat="@mipmap/lxac1" />
@@ -258,7 +258,7 @@
                 app:srcCompat="@mipmap/lxac2" />
 
             <TextView
-                android:id="@+id/lxactext"
+                android:id="@+id/metroLuxuryDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/LXAC2"
