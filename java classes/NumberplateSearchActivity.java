@@ -43,16 +43,16 @@ public class NumberplateSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_numerplate_search);
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.loadingNumberplatesProgressBar);
         progressBar.setVisibility(View.VISIBLE);
-        regNumDisplayTextView = findViewById(R.id.regNumDisplayTextView);
+        regNumDisplayTextView = findViewById(R.id.loadingNumberplatesTextView);
 
         allBusesACTV = findViewById(R.id.allBusesACTV);
         allBusesACTV.setThreshold(0);
 
         allBusesACTV.setVisibility(View.INVISIBLE);
 
-        searchButton = findViewById(R.id.scanButtonMethod1);
+        searchButton = findViewById(R.id.numberplateSearchButton);
         searchButton.setVisibility(View.INVISIBLE);
 
         new ShowAllBuses().execute();
@@ -137,7 +137,7 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,5,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

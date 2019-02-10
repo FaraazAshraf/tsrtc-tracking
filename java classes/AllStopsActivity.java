@@ -39,12 +39,12 @@ public class AllStopsActivity extends AppCompatActivity {
         });
 
         busIDString = getIntent().getExtras().getString("busIDString");
-        stopsLinearLayout = findViewById(R.id.stopsLinearLayout);
+        stopsLinearLayout = findViewById(R.id.allStopsLinearLayout);
 
         busRegNum = getIntent().getExtras().getString("busRegNum");
         busType = getIntent().getExtras().getString("busType");
 
-        titleTextView = findViewById(R.id.titleTextView);
+        titleTextView = findViewById(R.id.allStopsTitleTextView);
 
         busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                 .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")

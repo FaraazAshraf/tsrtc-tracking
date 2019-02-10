@@ -397,10 +397,10 @@ public class SingleBusActivity extends AppCompatActivity {
                         and there is no ETA for the next stop
                         and the bus is not an airport bus
                         then bus is probably on a different route, so display as if no stop data*/
-                        if((sameHour && timeDifference >= 1000)
+                        if(((sameHour && timeDifference >= 1000)
                                 ||
                                 (!sameHour && sameDay && timeDifference >= 5000)
-                                        || (!sameDay && timeDifference >= 765000)
+                                        || (!sameDay && timeDifference >= 765000))
                                 && (nextStopEta.equalsIgnoreCase("null"))
                                 && (!destination.contains("AIRPORT") && !destination.contains("PUSHPAK"))
                                 && (!source.contains("AIRPORT") && !source.contains("PUSHPAK"))) {

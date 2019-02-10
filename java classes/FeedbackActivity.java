@@ -36,7 +36,7 @@ public class FeedbackActivity extends AppCompatActivity {
         });
 
         final EditText feedbackEditText = findViewById(R.id.feedbackEditText);
-        Button submitFeedback = findViewById(R.id.submitButton);
+        Button submitFeedback = findViewById(R.id.submitFeedbackButton);
 
         submitFeedback.setOnClickListener(new View.OnClickListener() {
             @Override

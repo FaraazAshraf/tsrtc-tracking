@@ -56,9 +56,9 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
         noBusesTextView = findViewById(R.id.noBusesTextView);
         noBusesTextView.setVisibility(View.INVISIBLE);
         busesLinearLayout = findViewById(R.id.linearLayout);
-        searchButton = findViewById(R.id.scanButtonMethod1);
+        searchButton = findViewById(R.id.searchBusesOnStopSearchButton);
 
-        stopsACTV = findViewById(R.id.stopsACTV);
+        stopsACTV = findViewById(R.id.searchBusesOnStopACTV);
 
         stopsACTV.setVisibility(View.INVISIBLE);
         searchButton.setVisibility(View.INVISIBLE);
@@ -79,7 +79,7 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
 
         stopsACTV.setThreshold(0);
 
-        loadingCircle = findViewById(R.id.loadingCircle);
+        loadingCircle = findViewById(R.id.searchBusesOnStopLoadingCircle);
         loadingCircle.setVisibility(View.INVISIBLE);
 
         final Button loadCityStopsButton = findViewById(R.id.loadCityStopsButton);
@@ -526,7 +526,7 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,5,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

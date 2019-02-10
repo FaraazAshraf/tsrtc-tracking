@@ -60,11 +60,11 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
         noBusesTextView = findViewById(R.id.noBusesTextView);
         noBusesTextView.setVisibility(View.INVISIBLE);
 
-        busesLinearLayout = findViewById(R.id.busesLinearLayout);
+        busesLinearLayout = findViewById(R.id.busTypeDepotLinearLayout);
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.busTypeDepotProgressBar);
         progressBar.setVisibility(View.INVISIBLE);
-        progressTextView = findViewById(R.id.progressTextView);
+        progressTextView = findViewById(R.id.busTypeDepotProgressTextView);
         progressTextView.setVisibility(View.INVISIBLE);
 
         Button backButton = findViewById(R.id.backButton);
@@ -127,7 +127,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
         typeOfSearchACTV.setAdapter(typeOfSearchAdapter);
         typeOfSearchACTV.setThreshold(0);
 
-        Button searchButton = findViewById(R.id.scanButtonMethod1);
+        Button searchButton = findViewById(R.id.busTypeDepotSearchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -542,7 +542,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,5,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.mainProgressBar);
 
         new LoadingBar().start();
 

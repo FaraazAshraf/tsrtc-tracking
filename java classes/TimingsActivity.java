@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -37,6 +38,8 @@ public class TimingsActivity extends AppCompatActivity {
 
     Button searchButton;
 
+    TextView disclaimerTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +53,10 @@ public class TimingsActivity extends AppCompatActivity {
             }
         });
 
-        searchButton = findViewById(R.id.searchButton);
+        disclaimerTextView = findViewById(R.id.disclaimerTextView);
+        disclaimerTextView.setVisibility(View.INVISIBLE);
+
+        searchButton = findViewById(R.id.timingsSearchButton);
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -163,6 +169,7 @@ public class TimingsActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     searchButton.setVisibility(View.INVISIBLE);
+                    disclaimerTextView.setVisibility(View.INVISIBLE);
                     loadingCircle.setVisibility(View.VISIBLE);
                 }
             });
@@ -185,7 +192,7 @@ public class TimingsActivity extends AppCompatActivity {
 
             String timings[] = getContentFromURL(url).split(";");
 
-            if(timings[0].equals("No records found.")) {
+            if(timings[0].equals("No records found.") || timings[0].equals("")) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -194,6 +201,12 @@ public class TimingsActivity extends AppCompatActivity {
                 });
             }
             else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        disclaimerTextView.setVisibility(View.VISIBLE);
+                    }
+                });
                 for(String timing : timings) {
                     String time = timing.split(",")[0];
                     String route = timing.split(",")[1];
@@ -202,9 +215,9 @@ public class TimingsActivity extends AppCompatActivity {
 
                     final Button b = new Button(TimingsActivity.this);
                     b.setClickable(false);
-                    b.setText("SCHEDULED TIME: " + time +
+                    b.setText("\nSCHEDULED TIME: " + time +
                             "\nBUS TYPE: " + busType.replace("INDRA", "RAJADHANI").replace("METRO DELUX AC", "LOW FLOOR AC") +
-                            "\nROUTE: " + route);
+                            "\nROUTE: " + route + "\n");
 
                     if(busType.equals("METRO DELUXE") || busType.equals("INDRA") || busType.contains("GARUDA")) {
                         b.setBackgroundResource(R.drawable.deluxe_bg);
@@ -222,8 +235,6 @@ public class TimingsActivity extends AppCompatActivity {
                         b.setBackgroundResource(R.drawable.lf_bg);
                         b.setTextColor(Color.WHITE);
                     }
-
-                    b.setVisibility(View.VISIBLE);
 
                     runOnUiThread(new Runnable() {
                         @Override

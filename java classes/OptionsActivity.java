@@ -48,9 +48,6 @@ public class OptionsActivity extends AppCompatActivity {
                 else if(id == R.id.cityInfo) {
                     startActivity(new Intent(OptionsActivity.this, CityServicesActivity.class));
                 }
-                else if(id == R.id.timings) {
-                    startActivity(new Intent(OptionsActivity.this, TimingsActivity.class));
-                }
                 else if(id == R.id.emergencyNos) {
                     new AlertDialog.Builder(OptionsActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
@@ -82,10 +79,12 @@ public class OptionsActivity extends AppCompatActivity {
             }
         });
 
-        Button numberplateSearchButton = findViewById(R.id.numberplateSearchButton);
-        Button busTypeSearchButton = findViewById(R.id.busTypeAndDepotSearchButton);
-        Button stopSearchButton = findViewById(R.id.stopSearchButton);
-        Button routeNumSearchButton = findViewById(R.id.routeNumSearchButton);
+        Button numberplateSearchButton = findViewById(R.id.openNumberplateSearchButton);
+        Button busTypeSearchButton = findViewById(R.id.openBusTypeDepotSearchButton);
+        Button stopSearchButton = findViewById(R.id.openStopSearchButton);
+        Button routeNumSearchButton = findViewById(R.id.openRouteNumSearchButton);
+        Button timingsSearchButton = findViewById(R.id.openTimingsSearchButton);
+        Button locateStopsButton = findViewById(R.id.openLocateStopsButton);
 
         numberplateSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +110,18 @@ public class OptionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(OptionsActivity.this, SearchBusesOnRouteActivity.class));
+            }
+        });
+        timingsSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OptionsActivity.this, TimingsActivity.class));
+            }
+        });
+        locateStopsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OptionsActivity.this, LocateStopsActivity.class));
             }
         });
 
@@ -261,7 +272,7 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(urlContent.equals("31")) {
+            if(urlContent.equals("33")) {
                 //do nothing because it is correct version
             }
             else {

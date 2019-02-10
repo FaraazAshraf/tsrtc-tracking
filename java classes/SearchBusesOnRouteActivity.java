@@ -53,10 +53,10 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_buses_on_route);
 
-        progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.routeNumSearchProgressBar);
         progressBar.setProgress(0);
         progressBar.setVisibility(View.INVISIBLE);
-        actionTextView = findViewById(R.id.actionTextView);
+        actionTextView = findViewById(R.id.routeNumSearchProgressEditText);
         actionTextView.setText("Searchstring: " + chosenRoute);
         actionTextView.setVisibility(View.INVISIBLE);
 
@@ -785,7 +785,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,5,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
