@@ -198,7 +198,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;

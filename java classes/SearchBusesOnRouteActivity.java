@@ -308,7 +308,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
                                             if (busRegNum.equals("AP11Z6086") || busRegNum.equals("AP11Z6087") ||
                                                     busRegNum.equals("AP11Z6084") || busRegNum.equals("AP11Z6093") ||
-                                                    busRegNum.equals("AP11Z6096")) {
+                                                    busRegNum.equals("AP11Z6096")
+                                            || busRegNum.contains("TS10")) {
                                                 busType = "METRO LUXURY AC";
                                             }
 
@@ -534,7 +535,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
                                 if(busRegNum.equals("AP11Z6086") || busRegNum.equals("AP11Z6087") ||
                                         busRegNum.equals("AP11Z6084") || busRegNum.equals("AP11Z6093") ||
-                                        busRegNum.equals("AP11Z6096")) {
+                                        busRegNum.equals("AP11Z6096")
+                                || busRegNum.contains("TS10")) {
                                     busType = "METRO LUXURY AC";
                                 }
 
@@ -716,7 +718,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;
@@ -785,7 +787,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

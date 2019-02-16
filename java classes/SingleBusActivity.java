@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -37,14 +36,14 @@ public class SingleBusActivity extends AppCompatActivity {
     String nextStop;
     String busRegNumStringWrong;
     String busRegNumString;
-    Dictionary<String, String> busesAndIDs;
+    final Dictionary<String, String> busesAndIDs = new Hashtable();
 
     String busType;
 
     Button showAllStopsButton;
     Button gpsButton;
 
-    boolean keepRefreshing;
+    boolean keepRefreshing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,25 +67,15 @@ public class SingleBusActivity extends AppCompatActivity {
                 .replace("TS07Z4039", "AP11Z4039").replace("TS07Z4004", "AP7Z4004")
                 .replace("TS07Z4020", "AP7Z4020").replace("TS07Z4008", "AP07Z4008");
 
-        busesAndIDs = populateDictionaryBusesAndIDs();
-
+        mainTextView.setText("Searching...");
         busRegNumStringWrong = busRegNumString;
-
-        busIDTextView.setText("Bus ID:\n" + busesAndIDs.get(busRegNumStringWrong));
-
         busRegNumString = busRegNumString.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                 .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                 .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
                 .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
                 .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
 
-        mainTextView.setText("Searching...");
-        if(connectedToInternet())
-            new GetBusData(busesAndIDs.get(busRegNumStringWrong)).start();
-        else {
-            Toast.makeText(SingleBusActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
-            finish();
-        }
+        new PopulateDictionary().start();
 
         showAllStopsButton = findViewById(R.id.showAllStopsButton);
         showAllStopsButton.setVisibility(View.INVISIBLE);
@@ -112,9 +101,6 @@ public class SingleBusActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        keepRefreshing = true;
-        new Refresh10Sec().start();
 
     }
 
@@ -225,7 +211,8 @@ public class SingleBusActivity extends AppCompatActivity {
 
                 if(busRegNumString.equals("AP11Z6086") || busRegNumString.equals("AP11Z6087") ||
                         busRegNumString.equals("AP11Z6084") || busRegNumString.equals("AP11Z6093") ||
-                        busRegNumString.equals("AP11Z6096")) {
+                        busRegNumString.equals("AP11Z6096")
+                || busRegNumString.contains("TS10")) {
                     busType = "METRO LUXURY AC";
                 }
 
@@ -241,8 +228,8 @@ public class SingleBusActivity extends AppCompatActivity {
                 lastUpdated2 = lastUpdated2.replaceAll("-", "").replaceAll(":","").replaceAll(" ", "");
                 double lastUpdatedDouble = Double.parseDouble(lastUpdated2);
 
-                if(((currentDateDouble-lastUpdatedDouble > 10000000) && (differentMonth = false))
-                || ((differentMonth = true) && (currentDateDouble-lastUpdatedDouble > 80000000))) {
+                if(((currentDateDouble-lastUpdatedDouble > 10000000) && (!differentMonth))
+                || ((differentMonth) && (currentDateDouble-lastUpdatedDouble > 80000000))) {
                     keepRefreshing = false;
                     VMUDisconnected = true;
                     // if the bus was not updated for 10 days, it means VMU disconnected
@@ -366,12 +353,6 @@ public class SingleBusActivity extends AppCompatActivity {
                     //bus has been on SOME of the stops on the programmed route.
                     //we now need to see if the bus is still on that route
                     else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                showAllStopsButton.setVisibility(View.VISIBLE);
-                            }
-                        });
                         nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
                         String nextStopEta = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4];
                         if (!nextStopEta.equalsIgnoreCase("null"))
@@ -468,34 +449,37 @@ public class SingleBusActivity extends AppCompatActivity {
         }//run()
     }
 
-    protected Dictionary populateDictionaryBusesAndIDs() {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(
-                    new InputStreamReader(getAssets().open("BusIDDepotTypeTS.txt")));
-        } catch (IOException e) {
-            //won't occur
-        }
-        String message = new String();
-        String line;
-
-        try {
-            while ((line = reader.readLine()) != null) {
-                message += line;
+    private class PopulateDictionary extends Thread {
+        public void run() {
+            String urlContent = null;
+            try {
+                urlContent = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e1) {
-            e1.printStackTrace();
+
+            String fileContentsArray[] = urlContent.split(";");
+
+            for(int i = 0; i < fileContentsArray.length; i++) {
+                String regAndID[] = fileContentsArray[i].split(",");
+                busesAndIDs.put(regAndID[0], regAndID[1]);
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    busIDTextView.setText("Bus ID:\n" + busesAndIDs.get(busRegNumStringWrong));
+                    if(connectedToInternet())
+                        new GetBusData(busesAndIDs.get(busRegNumStringWrong)).start();
+                    else {
+                        Toast.makeText(SingleBusActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                    keepRefreshing = true;
+                    new Refresh10Sec().start();
+                }
+            });
         }
-
-        String fileContentsArray[] = message.split(";");
-
-        Dictionary<String, String> busesAndIDs = new Hashtable();
-
-        for(int i = 0; i < fileContentsArray.length; i++) {
-            String regAndID[] = fileContentsArray[i].split(",");
-            busesAndIDs.put(regAndID[0], regAndID[1]);
-        }
-        return busesAndIDs;
     }
 
     private String getContentFromURL(URL url) {
@@ -590,7 +574,7 @@ public class SingleBusActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;

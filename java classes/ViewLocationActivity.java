@@ -20,6 +20,7 @@ public class ViewLocationActivity extends AppCompatActivity {
 
     WebView webView1;
     boolean keepRefreshing = true;
+    String gpsCoordsOld;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,13 +103,16 @@ public class ViewLocationActivity extends AppCompatActivity {
 
             final String gpsCoords = getContentFromURL(url).split(",")[6] + "," + getContentFromURL(url).split(",")[7];
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    webView1.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",15z");
-                    webView1.setVisibility(View.INVISIBLE);
-                }
-            });
+            if(!gpsCoords.equals(gpsCoordsOld)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView1.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",15z");
+                        webView1.setVisibility(View.INVISIBLE);
+                    }
+                });
+                gpsCoordsOld = gpsCoords;
+            }
 
             try {
                 Thread.sleep(3000);
@@ -216,7 +220,7 @@ public class ViewLocationActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;

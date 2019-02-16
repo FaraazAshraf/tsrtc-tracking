@@ -147,7 +147,7 @@ public class LocateStopsActivity extends AppCompatActivity {
     class FillACTV extends Thread {
         public void run() {
             try {
-                stops = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/hyd_stops"))
+                stops = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/hyd_stops_location"))
                         .split(";");
             }
             catch (MalformedURLException e) {

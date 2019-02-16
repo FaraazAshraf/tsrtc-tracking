@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -207,23 +206,14 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                     busesLinearLayout.removeAllViews();
                 }
             });
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(getAssets().open("BusIDDepotTypeTS.txt")));
-            } catch (IOException e) {
-                //won't occur. ever. promise.
-            }
-            String fileContents = new String();
-            String line;
 
+            String fileContents = null;
             try {
-                while ((line = reader.readLine()) != null) {
-                    fileContents += line;
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
+                fileContents = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
+
             String fileContentsArray[] = fileContents.split(";");
             ArrayList<String> validIDs = new ArrayList<String>();
 
@@ -293,7 +283,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
 
                             if(singleBus[0].equals("AP11Z6086") || singleBus[0].equals("AP11Z6087") ||
                                     singleBus[0].equals("AP11Z6084") || singleBus[0].equals("AP11Z6093") ||
-                                    singleBus[0].equals("AP11Z6096")) {
+                                    singleBus[0].equals("AP11Z6096")
+                            || singleBus[0].contains("TS10")) {
                                 busType = "METRO LUXURY AC";
                             }
                             if(singleBus[0].equals("TS07Z3998") || singleBus[0].equals("TS07Z4017") ||
@@ -542,7 +533,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

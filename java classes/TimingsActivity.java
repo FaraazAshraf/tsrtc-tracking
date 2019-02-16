@@ -215,8 +215,9 @@ public class TimingsActivity extends AppCompatActivity {
 
                     final Button b = new Button(TimingsActivity.this);
                     b.setClickable(false);
+                    busType = busType.replace("INDRA", "RAJADHANI").replace("METRO DELUX AC", "LOW FLOOR AC").replace("METRO LUXURY OL", "METRO LUXURY AC");
                     b.setText("\nSCHEDULED TIME: " + time +
-                            "\nBUS TYPE: " + busType.replace("INDRA", "RAJADHANI").replace("METRO DELUX AC", "LOW FLOOR AC") +
+                            "\nBUS TYPE: " + busType +
                             "\nROUTE: " + route + "\n");
 
                     if(busType.equals("METRO DELUXE") || busType.equals("INDRA") || busType.contains("GARUDA")) {
@@ -383,7 +384,7 @@ public class TimingsActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;

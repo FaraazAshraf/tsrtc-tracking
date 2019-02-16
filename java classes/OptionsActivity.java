@@ -234,7 +234,7 @@ public class OptionsActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;
@@ -272,8 +272,8 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(urlContent.equals("33")) {
-                //do nothing because it is correct version
+            if(Integer.parseInt(urlContent) <= 38) {
+                //do nothing because newest version
             }
             else {
                 runOnUiThread(new Runnable() {

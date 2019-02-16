@@ -2,7 +2,6 @@ package com.ashraf.faraa.livebus;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -31,9 +29,9 @@ import java.util.Date;
 public class NumberplateSearchActivity extends AppCompatActivity {
 
     AutoCompleteTextView allBusesACTV;
-    ProgressBar progressBar;
+    ProgressBar loadingNumberplatesProgressBar;
     Toolbar toolbar;
-    TextView regNumDisplayTextView;
+    TextView loadingNumberplatesTextView;
 
     Button searchButton;
 
@@ -43,19 +41,21 @@ public class NumberplateSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_numerplate_search);
 
-        progressBar = findViewById(R.id.loadingNumberplatesProgressBar);
-        progressBar.setVisibility(View.VISIBLE);
-        regNumDisplayTextView = findViewById(R.id.loadingNumberplatesTextView);
+        loadingNumberplatesProgressBar = findViewById(R.id.loadingNumberplatesProgressBar);
+        loadingNumberplatesProgressBar.setVisibility(View.VISIBLE);
+
+        loadingNumberplatesTextView = findViewById(R.id.loadingNumberplatesTextView);
+        loadingNumberplatesTextView.setVisibility(View.VISIBLE);
+        loadingNumberplatesTextView.setText("Connecting...");
 
         allBusesACTV = findViewById(R.id.allBusesACTV);
         allBusesACTV.setThreshold(0);
-
         allBusesACTV.setVisibility(View.INVISIBLE);
 
         searchButton = findViewById(R.id.numberplateSearchButton);
         searchButton.setVisibility(View.INVISIBLE);
 
-        new ShowAllBuses().execute();
+        new ShowAllBuses().start();
 
         allBusesACTV.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -68,14 +68,6 @@ public class NumberplateSearchActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 allBusesACTV.showDropDown();
                 return false;
-            }
-        });
-
-        allBusesACTV.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus)
-                    allBusesACTV.showDropDown();
-                else allBusesACTV.showDropDown();
             }
         });
 
@@ -114,6 +106,54 @@ public class NumberplateSearchActivity extends AppCompatActivity {
         });
     }
 
+    private class ShowAllBuses extends Thread {
+        public void run() {
+            String urlContent = null;
+
+            try {
+                urlContent = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+
+            allBusRegNums = new String[urlContent.split(";").length];
+            final int numBuses = allBusRegNums.length;
+            for(int i = 0; i < numBuses; i++) {
+                String busRegNum = urlContent.split(";")[i].split(",")[0];
+                busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
+                        .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
+                        .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
+                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
+                allBusRegNums[i] = busRegNum;
+                final int finalI = i;
+                final String finalBusRegNum = busRegNum;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingNumberplatesProgressBar.setProgress((finalI *100/numBuses));
+                        loadingNumberplatesTextView.setText("Loading " + finalBusRegNum);
+                    }
+                });
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayAdapter<String> allBusesAdapter = new ArrayAdapter<>(NumberplateSearchActivity.this, android.R.layout.simple_list_item_1, allBusRegNums);
+                    allBusesACTV.setAdapter(allBusesAdapter);
+
+                    loadingNumberplatesProgressBar.setVisibility(View.INVISIBLE);
+                    loadingNumberplatesTextView.setVisibility(View.INVISIBLE);
+
+                    toolbar.setVisibility(View.VISIBLE);
+                    allBusesACTV.setVisibility(View.VISIBLE);
+                    searchButton.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
     private class LogAction extends Thread {
 
         String logString;
@@ -137,84 +177,12 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
             if(logString.length() <= 50) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,6,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
                 String dummy = getContentFromURL(url);
             }
-        }
-    }
-
-    private class ShowAllBuses extends AsyncTask<Void, ProgressPublisher, Void> {
-
-        String fileContents;
-
-        protected void onPreExecute() {
-            regNumDisplayTextView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        protected Void doInBackground(Void... voids) {
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(getAssets().open("BusIDDepotTypeTS.txt")));
-            } catch (IOException e) {
-                //won't occur
-            }
-            fileContents = new String();
-            String line;
-
-            try {
-                while ((line = reader.readLine()) != null) {
-                    fileContents += line;
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-            allBusRegNums = new String[fileContents.split(";").length];
-            int numBuses = allBusRegNums.length;
-            for(int i = 0; i < numBuses; i++) {
-                String busRegNum = fileContents.split(";")[i].split(",")[0];
-                busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                        .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                        .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
-                allBusRegNums[i] = busRegNum;
-                publishProgress(new ProgressPublisher((i*100/numBuses), busRegNum));
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(Void aVoid) {
-
-            ArrayAdapter<String> allBusesAdapter = new ArrayAdapter<>(NumberplateSearchActivity.this, android.R.layout.simple_list_item_1, allBusRegNums);
-            allBusesACTV.setAdapter(allBusesAdapter);
-            progressBar.setVisibility(View.INVISIBLE);
-            toolbar.setVisibility(View.VISIBLE);
-            allBusesACTV.setVisibility(View.VISIBLE);
-            regNumDisplayTextView.setVisibility(View.INVISIBLE);
-            searchButton.setVisibility(View.VISIBLE);
-        }
-
-        protected void onProgressUpdate(ProgressPublisher... values) {
-                progressBar.setProgress(values[0].progress);
-                regNumDisplayTextView.setText("Loading "+values[0].busRegNum);
-        }
-    }
-
-    private class ProgressPublisher {
-
-        int progress;
-        String busRegNum;
-
-        public ProgressPublisher(int progress, String busRegNum) {
-            this.progress = progress;
-            this.busRegNum = busRegNum;
         }
     }
 
@@ -310,7 +278,7 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
         try {
             while ((idkWhy = br.readLine()) != null) {
-                urlContent = idkWhy;
+                urlContent += idkWhy;
             }
         } catch (Exception e1) {
             boolean errorFlag = true;
