@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -18,11 +20,15 @@ import java.net.URLConnection;
 
 public class ViewLocationActivity extends AppCompatActivity {
 
-    WebView webView1;
-    boolean keepRefreshing = true;
-    String gpsCoordsOld;
+    int count = 0;
 
-    @Override
+    boolean keepRefreshing = true;
+
+    String gpsCoordsOld = "null";
+
+    WebView webView1, webView2;
+    TextView lastUpdatedTextView;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_location);
@@ -35,9 +41,28 @@ public class ViewLocationActivity extends AppCompatActivity {
             }
         });
 
+        lastUpdatedTextView = findViewById(R.id.viewLocationLastUpdatedTextView);
+
         webView1 = findViewById(R.id.webView1);
         webView1.getSettings().setJavaScriptEnabled(true);
-        webView1.setVisibility(View.INVISIBLE);
+        webView1.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                // do your handling codes here, which url is the requested url
+                // probably you need to open that url rather than redirect:
+                view.loadUrl(url);
+                return false; // then it is not handled by default action
+            }
+        });
+        webView2 = findViewById(R.id.webView2);
+        webView2.getSettings().setJavaScriptEnabled(true);
+        webView2.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+                // do your handling codes here, which url is the requested url
+                // probably you need to open that url rather than redirect:
+                view.loadUrl(url);
+                return false; // then it is not handled by default action
+            }
+        });
 
         webView1.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -46,10 +71,17 @@ public class ViewLocationActivity extends AppCompatActivity {
             }
         });
 
+        webView2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true; //True if the listener has consumed the event, false otherwise.
+            }
+        });
+
         String busID = getIntent().getExtras().getString("busID");
 
-        new StartTracking(busID).start();
-        new Refresh10Sec(busID).start();
+        new RunTracker(busID).start();
+
     }
 
     public void onBackPressed() {
@@ -57,74 +89,122 @@ public class ViewLocationActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public class Refresh10Sec extends Thread {
+    private class RunTracker extends Thread {
 
         String busID;
 
-        Refresh10Sec (String busID) {
+        RunTracker(String busID) {
             this.busID = busID;
         }
 
         public void run() {
+
             while(keepRefreshing) {
+                new ShowLocation(busID).start();
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(keepRefreshing) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            new StartTracking(busID).start();
-                        }
-                    });
-                }
             }
         }
     }
 
-    private class StartTracking extends Thread {
+    private class ShowLocation extends Thread {
 
         String busID;
 
-        StartTracking(String busID) {
+        ShowLocation(String busID) {
             this.busID = busID;
         }
 
         public void run() {
-            URL url = null;
+
+            String urlContent = null;
 
             try {
-                url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busID + "&flag=21");
+                urlContent = getContentFromURL(new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busID + "&flag=21"));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
 
-            final String gpsCoords = getContentFromURL(url).split(",")[6] + "," + getContentFromURL(url).split(",")[7];
+            count++;
 
-            if(!gpsCoords.equals(gpsCoordsOld)) {
-                runOnUiThread(new Runnable() {
+            final String gpsCoords = urlContent.split(",")[6] + "," + urlContent.split(",")[7];
+
+            if(gpsCoords.equals(gpsCoordsOld)) {
+                //if the bus is not moving then let the user move around the map. no harm done.
+                webView1.setOnTouchListener(new View.OnTouchListener() {
                     @Override
-                    public void run() {
-                        webView1.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",15z");
-                        webView1.setVisibility(View.INVISIBLE);
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return false; //True if the listener has consumed the event, false otherwise.
                     }
                 });
-                gpsCoordsOld = gpsCoords;
-            }
 
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                webView2.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return false; //True if the listener has consumed the event, false otherwise.
+                    }
+                });
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    webView1.setVisibility(View.VISIBLE);
+            else {
+                gpsCoordsOld = gpsCoords;
+
+                if (count % 2 == 0) {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView1.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",13z");
+                            webView1.setVisibility(View.GONE);
+                            webView2.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    final String finalUrlContent = urlContent;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView2.setVisibility(View.GONE);
+                            webView1.setVisibility(View.VISIBLE);
+                            lastUpdatedTextView.setText("Last updated: " + finalUrlContent.split(",")[5]);
+                        }
+                    });
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView2.loadUrl("https://www.google.com/maps/place/" + gpsCoords + "/@" + gpsCoords + ",13z");
+                            webView2.setVisibility(View.GONE);
+                            webView1.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    final String finalUrlContent = urlContent;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView1.setVisibility(View.GONE);
+                            webView2.setVisibility(View.VISIBLE);
+                            lastUpdatedTextView.setText("Last updated: " + finalUrlContent.split(",")[5]);
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 
