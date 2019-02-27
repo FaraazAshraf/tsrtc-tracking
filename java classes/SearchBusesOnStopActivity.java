@@ -2,14 +2,12 @@ package com.ashraf.faraa.livebus;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -250,6 +248,14 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
                             busType = "METRO LUXURY AC";
                         }
 
+                        if(busRegNum.equals("TS07Z4024") || busRegNum.equals("TS07Z4023") ||
+                                busRegNum.equals("TS07Z4001") || busRegNum.equals("TS07Z4053") ||
+                                busRegNum.equals("TS07Z4031") || busRegNum.equals("TS07Z4030")
+                                || busRegNum.equals("TS07Z4002") || busRegNum.equals("TS07Z4034")
+                                || busRegNum.equals("TS07Z4056")) {
+                            busType = "METRO DELUXE";
+                        }
+
                         if (!buses.contains(busRegNum)) {
                             Button b = new Button(SearchBusesOnStopActivity.this);
                             b.setText("\n" +
@@ -378,18 +384,8 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SearchBusesOnStopActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SearchBusesOnStopActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -406,18 +402,8 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SearchBusesOnStopActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SearchBusesOnStopActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -435,18 +421,7 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SearchBusesOnStopActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SearchBusesOnStopActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
                 }
             });
             while (errorFlag) {
@@ -465,25 +440,14 @@ public class SearchBusesOnStopActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SearchBusesOnStopActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SearchBusesOnStopActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
                 //fix ur enternetz!
             }
         }
-
         return urlContent;
     }
 

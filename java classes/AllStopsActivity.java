@@ -1,10 +1,8 @@
 package com.ashraf.faraa.livebus;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -189,18 +187,8 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(AllStopsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -217,18 +205,8 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(AllStopsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -246,18 +224,7 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(AllStopsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
                 }
             });
             while (errorFlag) {
@@ -276,25 +243,14 @@ public class AllStopsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(AllStopsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(AllStopsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
                 //fix ur enternetz!
             }
         }
-
         return urlContent;
     }
 }

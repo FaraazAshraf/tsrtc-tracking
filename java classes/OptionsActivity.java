@@ -85,6 +85,7 @@ public class OptionsActivity extends AppCompatActivity {
         Button routeNumSearchButton = findViewById(R.id.openRouteNumSearchButton);
         Button timingsSearchButton = findViewById(R.id.openTimingsSearchButton);
         Button locateStopsButton = findViewById(R.id.openLocateStopsButton);
+        Button viewFavouritesButton = findViewById(R.id.viewFavouritesButton);
 
         numberplateSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +123,12 @@ public class OptionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(OptionsActivity.this, LocateStopsActivity.class));
+            }
+        });
+        viewFavouritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OptionsActivity.this, ViewFavouriteBusesActivity.class));
             }
         });
 
@@ -272,7 +279,7 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(Integer.parseInt(urlContent) <= 39) {
+            if(Integer.parseInt(urlContent) <= 43) {
                 //do nothing because newest version
             }
             else {

@@ -1,13 +1,11 @@
 package com.ashraf.faraa.livebus;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -137,9 +135,9 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                 String chosenDepot = busDepotsACTV.getText().toString();
                 String chosenSearchType = typeOfSearchACTV.getText().toString();
 
-                chosenBusType.trim();
-                chosenDepot.trim();
-                chosenSearchType.trim();
+                chosenBusType = chosenBusType.trim();
+                chosenDepot = chosenDepot.trim();
+                chosenSearchType = chosenSearchType.trim();
 
                 boolean validType = false;
                 boolean validDepot = false;
@@ -263,7 +261,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                         singleBus[0] = singleBus[0].replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
                                 .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
                                 .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                .replace("AP11Z4039", "TS07Z4039");
+                                .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
+                                .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
 
                         boolean valid;
 
@@ -287,9 +286,12 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                             || singleBus[0].contains("TS10")) {
                                 busType = "METRO LUXURY AC";
                             }
-                            if(singleBus[0].equals("TS07Z3998") || singleBus[0].equals("TS07Z4017") ||
-                                    singleBus[0].equals("TS07Z4015") || singleBus[0].equals("TS07Z4040") ||
-                                    singleBus[0].equals("TS07Z4041") || singleBus[0].equals("TS07Z4046")
+                            if(singleBus[0].equals("TS07Z4024") || singleBus[0].equals("TS07Z4023") ||
+                                    singleBus[0].equals("TS07Z4001") || singleBus[0].equals("TS07Z4053") ||
+                                    singleBus[0].equals("TS07Z4031") || singleBus[0].equals("TS07Z4030")
+                                    || singleBus[0].equals("TS07Z4002") || singleBus[0].equals("TS07Z4034")
+                                    || singleBus[0].equals("TS07Z4056") || singleBus[0].equals("TS07Z4046")
+                                    || singleBus[0].equals("TS07Z4041") || singleBus[0].equals("TS07Z4040")
                                     || singleBus[0].equals("TS07Z4039")) {
                                 busType = "METRO DELUXE";
                             }
@@ -384,18 +386,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(BusTypeDepotSearchActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(BusTypeDepotSearchActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -412,18 +404,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(BusTypeDepotSearchActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(BusTypeDepotSearchActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -441,18 +423,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(BusTypeDepotSearchActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(BusTypeDepotSearchActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
                 }
             });
             while (errorFlag) {
@@ -471,25 +442,14 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(BusTypeDepotSearchActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(BusTypeDepotSearchActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
                 //fix ur enternetz!
             }
         }
-
         return urlContent;
     }
 

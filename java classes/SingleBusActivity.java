@@ -1,12 +1,11 @@
 package com.ashraf.faraa.livebus;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -45,10 +44,19 @@ public class SingleBusActivity extends AppCompatActivity {
 
     boolean keepRefreshing = false;
 
+    SharedPreferences sharedPref;
+    Button addFavButton;
+    Button removeFavButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_bus);
+
+        String preference_file_key = "com.ashraf.faraa.livebus.sharedPrefs";
+
+        sharedPref = this.getSharedPreferences(preference_file_key, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
 
         gpsButton = findViewById(R.id.gpsButton);
         gpsButton.setVisibility(View.INVISIBLE);
@@ -99,6 +107,52 @@ public class SingleBusActivity extends AppCompatActivity {
             public void onClick(View v) {
                 keepRefreshing = false;
                 onBackPressed();
+            }
+        });
+
+        addFavButton = findViewById(R.id.addFavButton);
+        removeFavButton = findViewById(R.id.removeFavButton);
+
+        addFavButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!sharedPref.contains("favouriteBuses")) {
+                    String favouriteBuses = "";
+                    favouriteBuses += (busesAndIDs.get(busRegNumStringWrong) + ";");
+
+                    editor.putString("favouriteBuses", favouriteBuses);
+                    editor.apply();
+                }
+                else {
+                    String favouriteBuses = sharedPref.getString("favouriteBuses", "DEFAULT");
+                    favouriteBuses += (busesAndIDs.get(busRegNumStringWrong) + ";");
+
+                    editor.putString("favouriteBuses", favouriteBuses);
+
+                    editor.apply();
+                }
+
+                addFavButton.setVisibility(View.INVISIBLE);
+                removeFavButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        removeFavButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String favouriteBuses = sharedPref.getString("favouriteBuses", "DEFAULT");
+
+                String busIDToDelete = busesAndIDs.get(busRegNumStringWrong);
+
+                if(favouriteBuses.contains(busIDToDelete));
+                favouriteBuses = favouriteBuses.replace(busIDToDelete + ";", "");
+
+                editor.putString("favouriteBuses", favouriteBuses);
+
+                editor.apply();
+
+                removeFavButton.setVisibility(View.INVISIBLE);
+                addFavButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -214,6 +268,14 @@ public class SingleBusActivity extends AppCompatActivity {
                         busRegNumString.equals("AP11Z6096")
                 || busRegNumString.contains("TS10")) {
                     busType = "METRO LUXURY AC";
+                }
+
+                if(busRegNumString.equals("TS07Z4024") || busRegNumString.equals("TS07Z4023") ||
+                        busRegNumString.equals("TS07Z4001") || busRegNumString.equals("TS07Z4053") ||
+                        busRegNumString.equals("TS07Z4031") || busRegNumString.equals("TS07Z4030")
+                        || busRegNumString.equals("TS07Z4002") || busRegNumString.equals("TS07Z4034")
+                        || busRegNumString.equals("TS07Z4056")) {
+                    busType = "METRO DELUXE";
                 }
 
                 boolean differentMonth = false;
@@ -479,6 +541,35 @@ public class SingleBusActivity extends AppCompatActivity {
                     new Refresh10Sec().start();
                 }
             });
+
+            if(!sharedPref.contains("favouriteBuses")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        addFavButton.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+            else {
+                String favouriteBuses = sharedPref.getString("favouriteBuses", "No records found.");
+                if(favouriteBuses.contains(busesAndIDs.get(busRegNumStringWrong) + ";")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            removeFavButton.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            addFavButton.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+            }
+
         }
     }
 
@@ -494,18 +585,8 @@ public class SingleBusActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SingleBusActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SingleBusActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -522,18 +603,8 @@ public class SingleBusActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SingleBusActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SingleBusActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -551,18 +622,7 @@ public class SingleBusActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SingleBusActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SingleBusActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
                 }
             });
             while (errorFlag) {
@@ -581,25 +641,14 @@ public class SingleBusActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(SingleBusActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(SingleBusActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
                 //fix ur enternetz!
             }
         }
-
         return urlContent;
     }
 

@@ -1,9 +1,7 @@
 package com.ashraf.faraa.livebus;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -262,9 +260,9 @@ public class TimingsActivity extends AppCompatActivity {
 
             try {
                 if(type.equals("city"))
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=0,67&flag=27");
+                    url = new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/hyd_stops_from_server");
                 else
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=0,67&flag=26");
+                    url = new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/long_distance_stops_from_server");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -304,18 +302,8 @@ public class TimingsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(TimingsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(TimingsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -332,18 +320,8 @@ public class TimingsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(TimingsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(TimingsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
@@ -361,18 +339,7 @@ public class TimingsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(TimingsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(TimingsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
                 }
             });
             while (errorFlag) {
@@ -391,25 +358,14 @@ public class TimingsActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    new AlertDialog.Builder(TimingsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle("Internet error")
-                            .setMessage("Please check your internet and try again.")
-                            .setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                            {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-
-                            }).show();
+                    Toast.makeText(TimingsActivity.this, "Connection error", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             });
             while (errorFlag) {
                 //fix ur enternetz!
             }
         }
-
         return urlContent;
     }
 }
