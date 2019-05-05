@@ -111,7 +111,7 @@
         android:id="@+id/timingsSearchButton"
         android:layout_width="155dp"
         android:layout_height="75dp"
-        android:layout_below="@id/openNumberplateSearchButton"
+        android:layout_below="@id/toStopACTV"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@drawable/std_button"

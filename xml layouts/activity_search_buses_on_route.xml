@@ -52,7 +52,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:ems="10"
-        android:hint="Enter a route to scan: ex. 218D"
+        android:hint="Enter a route to scan: ex. 218D, 113K/L"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -60,15 +60,16 @@
         app:layout_constraintTop_toBottomOf="@+id/toolBar" />
 
     <Button
-        android:id="@+id/scanButtonMethod1"
+        android:id="@+id/routeNumSearchButton"
         android:layout_width="103dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
         android:background="@drawable/std_button"
         android:padding="10dp"
-        android:text="Search\n(type 1)"
+        android:text="search"
         android:textColor="@android:color/white"
-        app:layout_constraintRight_toLeftOf="@id/centerButtonsTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/routeNumEditText" />
 
     <TextView
@@ -83,18 +84,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/routeNumEditText" />
 
-    <Button
-        android:id="@+id/scanButtonMethod2"
-        android:layout_width="103dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/std_button"
-        android:padding="10dp"
-        android:text="Search\n(type 2)"
-        android:textColor="@android:color/white"
-        app:layout_constraintLeft_toRightOf="@id/centerButtonsTextView"
-        app:layout_constraintTop_toBottomOf="@+id/routeNumEditText" />
-
     <TextView
         android:id="@+id/routeNumSearchProgressEditText"
         android:layout_width="wrap_content"
@@ -103,7 +92,7 @@
         android:text="Scanning..."
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scanButtonMethod1" />
+        app:layout_constraintTop_toBottomOf="@+id/routeNumSearchButton" />
 
     <ProgressBar
         android:id="@+id/routeNumSearchProgressBar"
