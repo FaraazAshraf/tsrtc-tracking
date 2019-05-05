@@ -105,7 +105,7 @@ public class FeedbackActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

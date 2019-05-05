@@ -1,12 +1,12 @@
 package com.ashraf.faraa.livebus;
 
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +25,8 @@ public class AllStopsActivity extends AppCompatActivity {
     boolean keepRefreshing = true;
     String busIDString;
 
+    ScrollView allStopsScrollView;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_stops);
@@ -39,19 +41,16 @@ public class AllStopsActivity extends AppCompatActivity {
         busIDString = getIntent().getExtras().getString("busIDString");
         stopsLinearLayout = findViewById(R.id.allStopsLinearLayout);
 
+        allStopsScrollView = findViewById(R.id.allStopsScrollView);
+
         busRegNum = getIntent().getExtras().getString("busRegNum");
         busType = getIntent().getExtras().getString("busType");
 
         titleTextView = findViewById(R.id.allStopsTitleTextView);
 
-        busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                .replace("AP11Z4039", "TS07Z4039");
-
         titleTextView.setText("Searching...");
 
-        new AllStops(busIDString).execute();
+        new AllStops(busIDString).start();
         new Refresh10Sec().start();
 
     }
@@ -61,11 +60,24 @@ public class AllStopsActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    protected void onPause() {
+        super.onPause();
+        keepRefreshing = false;
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if(!keepRefreshing) {
+            keepRefreshing = true;
+            new Refresh10Sec().start();
+        }
+    }
+
     public class Refresh10Sec extends Thread {
         public void run() {
             while(keepRefreshing) {
                 try {
-                    Thread.sleep(12000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -73,15 +85,20 @@ public class AllStopsActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new AllStops(busIDString).execute();
+                            new AllStops(busIDString).start();
                         }
                     });
+                }
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    private class AllStops extends AsyncTask<Void, Void, Void> {
+    private class AllStops extends Thread {
 
         String busIDString;
         String stopsDataUnformattedString;
@@ -92,7 +109,7 @@ public class AllStopsActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        public void run() {
 
             URL url = null;
 
@@ -102,16 +119,18 @@ public class AllStopsActivity extends AppCompatActivity {
                 //should never happen
             }
 
+            //we get the data for the next refresh
             stopsDataUnformattedString = getContentFromURL(url);
             allStopsData = stopsDataUnformattedString.split(";");
 
-            return null;
-        }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stopsLinearLayout.removeAllViews();
+                    titleTextView.setText(busRegNum + "  -  " + busType);
+                }
+            });
 
-        protected void onPostExecute(Void aVoid) {
-            stopsLinearLayout.removeAllViews();
-
-            titleTextView.setText(busRegNum + "  -  " + busType);
 
             if(stopsDataUnformattedString.equals("No records found.")) {
                 boolean noStops = true;
@@ -130,32 +149,52 @@ public class AllStopsActivity extends AppCompatActivity {
             else {
                 int lastSeenAtStopIndex = 12345;
                 for (int i = (allStopsData.length) - 1; i >= 0; i--) {
-                    String singleStopData[] = allStopsData[i].split(",");
+                    String[] singleStopData = allStopsData[i].split(",");
                     if (singleStopData[2].equals("Y")) {
                         lastSeenAtStopIndex = i;
                         break;
                     }
                 }
 
+                if(lastSeenAtStopIndex == 12345 || lastSeenAtStopIndex == (allStopsData.length) - 1) {
+                    keepRefreshing = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AllStopsActivity.this, "Stops data not found.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                }
+
                 for (int i = 0; i <= lastSeenAtStopIndex; i++) {
-                    Button b = new Button(AllStopsActivity.this);
+                    final Button b = new Button(AllStopsActivity.this);
                     b.setBackgroundResource(R.drawable.passed);
                     b.setTextSize(15);
                     b.setTextColor(Color.BLACK);
 
                     String stopName = allStopsData[i].split(",")[1];
                     String passedTime = allStopsData[i].split(",")[4];
-                    if (passedTime.equalsIgnoreCase("null")) {
-                        b.setText(stopName + "  -  No record");
+                    if (passedTime.equalsIgnoreCase("null") || allStopsData[i].split(",")[2].equals("N")) {
+                        b.setText(stopName + "\nno record");
                     } else {
-                        b.setText(stopName + "  -  passed at " + passedTime.substring(11, 16));
+                        b.setText(stopName + "\npassed at " + passedTime.substring(11, 16));
                     }
-                    stopsLinearLayout.addView(b);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            stopsLinearLayout.addView(b);
+                        }
+                    });
                 }
 
+                int numStopsBelowPassedStops = 0;
+
                 for (int i = lastSeenAtStopIndex + 1; i < allStopsData.length; i++) {
-                    Button b = new Button(AllStopsActivity.this);
+                    final Button b = new Button(AllStopsActivity.this);
                     b.setBackgroundResource(R.drawable.yetto);
+
                     b.setTextSize(15);
                     b.setClickable(false);
                     b.setTextColor(Color.BLACK);
@@ -164,19 +203,34 @@ public class AllStopsActivity extends AppCompatActivity {
                     String passedTime = allStopsData[i].split(",")[4];
 
                     if (passedTime.equalsIgnoreCase("null")) {
-                        b.setText(stopName + "  -  NO ETA");
+                        b.setText(stopName + "\nno ETA available");
                     } else {
-                        b.setText(stopName + "  -  ETA " + passedTime.substring(11, 16));
+                        b.setText(stopName + "\nETA " + passedTime.substring(11, 16));
                     }
 
-                    stopsLinearLayout.addView(b);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            stopsLinearLayout.addView(b);
+                        }
+                    });
+
+                    if(numStopsBelowPassedStops < 3) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                b.getParent().requestChildFocus(b,b);
+                            }
+                        });
+                        numStopsBelowPassedStops++;
+                    }
                 }
             }
         }
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

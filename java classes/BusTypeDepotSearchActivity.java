@@ -20,28 +20,26 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class BusTypeDepotSearchActivity extends AppCompatActivity {
 
     AutoCompleteTextView busTypesACTV;
-    String busTypes[] = {"ALL TYPES", "METRO EXPRESS", "METRO DELUXE", "LOW FLOOR AC", "METRO LUXURY AC", "EXPRESS", "DELUXE", "GARUDA", "GARUDA PLUS", "RAJADHANI", "METRO EXPRESS AL", "SUPER LUXURY"};
+    String[] busTypes = {"ALL TYPES", "METRO EXPRESS", "METRO DELUXE", "LOW FLOOR AC", "METRO LUXURY AC", "EXPRESS", "DELUXE", "GARUDA", "GARUDA PLUS", "RAJADHANI", "METRO EXPRESS AL", "SUPER LUXURY"};
 
     AutoCompleteTextView busDepotsACTV;
-    String depots[] = {"ALL DEPOTS", "MUSHEERABAD 2", "HAYATNAGAR 2", "MIYAPUR 2", "HAYATNAGAR 1", "MIDHANI", "BHEL", "NAGAR KURNOOL", "KARIMNAGAR 1", "WANAPARTHY", "KARIMNAGAR 2", "BARKATPURA", "SIRICILLA", "GADWAL", "VEMULAWADA", "GODAVARIKHANI", "UPPAL", "HCU", "CANTONMENT", "MUSHEERABAD 1", "KUKATPALLY", "FAROOQNAGAR", "CHENGICHERLA", "DILSUKH NAGAR", "RANIGUNJ 2", "KUSHAIGUDA", "RANIGUNJ 1", "RAJENDRANAGAR", "FALAKNUMA", "IBRAHIMPATNAM", "MEDCHAL", "KACHIGUDA", "WARANGAL 1", "MEHDIPATNAM", "HAKIMPET", "BANDLAGUDA", "KOLLAPUR", "MIYAPUR 1", "JEEDIMETLA", "MANTHANI", "METPALLI", "KORUTLA", "JAGITYALA", "MANCHIRYALA", "NARAYANPET", "MAHBUBNAGAR", "SHADNAGAR", "HYDERABAD 2", "PICKET", "HYDERABAD 3", "HYDERABAD 1", "ASIFABAD", "DUBBAK", "HUSNABAD", "SIDDIPET", "ZAHEERABAD", "GAJWELPRAGNAPUR", "NIZAMABAD 2", "MEDAK", "MIRYALAGUDA", "MANUGURU", "KHAMMAM", "MADHIRA", "UTNOOR", "BHADRACHALAM", "ADILABAD", "HANMAKONDA", "NARASMPET", "KOTHAGUDEM", "SATTUPALLY"};
+    String[] depots = {"ALL DEPOTS", "MUSHEERABAD 2", "HAYATNAGAR 2", "MIYAPUR 2", "HAYATNAGAR 1", "MIDHANI", "BHEL", "NAGAR KURNOOL", "KARIMNAGAR 1", "WANAPARTHY", "KARIMNAGAR 2", "BARKATPURA", "SIRICILLA", "GADWAL", "VEMULAWADA", "GODAVARIKHANI", "UPPAL", "HCU", "CANTONMENT", "MUSHEERABAD 1", "KUKATPALLY", "FAROOQNAGAR", "CHENGICHERLA", "DILSUKH NAGAR", "RANIGUNJ 2", "KUSHAIGUDA", "RANIGUNJ 1", "RAJENDRANAGAR", "FALAKNUMA", "IBRAHIMPATNAM", "MEDCHAL", "KACHIGUDA", "WARANGAL 1", "MEHDIPATNAM", "HAKIMPET", "BANDLAGUDA", "KOLLAPUR", "MIYAPUR 1", "JEEDIMETLA", "MANTHANI", "METPALLI", "KORUTLA", "JAGITYALA", "MANCHIRYALA", "NARAYANPET", "MAHBUBNAGAR", "SHADNAGAR", "HYDERABAD 2", "PICKET", "HYDERABAD 3", "HYDERABAD 1", "ASIFABAD", "DUBBAK", "HUSNABAD", "SIDDIPET", "ZAHEERABAD", "GAJWELPRAGNAPUR", "NIZAMABAD 2", "MEDAK", "MIRYALAGUDA", "MANUGURU", "KHAMMAM", "MADHIRA", "UTNOOR", "BHADRACHALAM", "ADILABAD", "HANMAKONDA", "NARASMPET", "KOTHAGUDEM", "SATTUPALLY"};
 
     AutoCompleteTextView typeOfSearchACTV;
-    String searchTypes[] = {"RUNNING BUSES (ACTIVE)", "INACTIVE BUSES", "ALL BUSES"};
+    String[] searchTypes = {"RUNNING BUSES (ACTIVE)", "INACTIVE BUSES", "ALL BUSES"};
 
     ProgressBar progressBar;
     TextView progressTextView;
+
+    Button searchButton;
 
     LinearLayout busesLinearLayout;
 
@@ -49,6 +47,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
     boolean searchInProgress = false;
 
     TextView noBusesTextView;
+
+    String[] busIdDepotType;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +58,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
         noBusesTextView.setVisibility(View.INVISIBLE);
 
         busesLinearLayout = findViewById(R.id.busTypeDepotLinearLayout);
+
+        busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
 
         progressBar = findViewById(R.id.busTypeDepotProgressBar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -124,7 +126,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
         typeOfSearchACTV.setAdapter(typeOfSearchAdapter);
         typeOfSearchACTV.setThreshold(0);
 
-        Button searchButton = findViewById(R.id.busTypeDepotSearchButton);
+        searchButton = findViewById(R.id.busTypeDepotSearchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,8 +168,8 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     progressTextView.setVisibility(View.VISIBLE);
                     if(connectedToInternet()) {
+                        searchButton.setVisibility(View.INVISIBLE);
                         new DisplayBuses(chosenBusType, chosenDepot, chosenSearchType).start();
-                        new LogAction(chosenDepot + "-" + chosenBusType).start();
                     }
                     else
                         Toast.makeText(BusTypeDepotSearchActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
@@ -205,20 +207,9 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                 }
             });
 
-            String fileContents = null;
-            try {
-                fileContents = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            String fileContentsArray[] = fileContents.split(";");
             ArrayList<String> validIDs = new ArrayList<String>();
 
-            if(chosenBusType.equals("RAJADHANI"))
-                chosenBusType = "INDRA";
-
-            for(String bus : fileContentsArray) {
+            for(String bus : busIdDepotType) {
                 String currentBusType = bus.split(",")[3];
                 String currentDepot = bus.split(",")[2];
                 String currentBusID = bus.split(",")[1];
@@ -229,16 +220,13 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                 }
             }
 
-            if(chosenBusType.equals("INDRA"))
-                chosenBusType = "RAJADHANI";
-
             final int numBuses = validIDs.size();
 
             if(numBuses == 0) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        noBusesTextView.setVisibility(View.VISIBLE);
+                        Toast.makeText(BusTypeDepotSearchActivity.this, chosenDepot + " does not have " + chosenBusType, Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -256,13 +244,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                         //do nothing, erroneous VMU
                     }
                     else {
-                        String singleBus[] = getContentFromURL(url).split(",");
-
-                        singleBus[0] = singleBus[0].replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                                .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                                .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                                .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
+                        String[] singleBus = getContentFromURL(url).split(",");
 
                         boolean valid;
 
@@ -278,34 +260,26 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                         if (valid) {
                             final Button b = new Button(BusTypeDepotSearchActivity.this);
 
-                            String busType = singleBus[9].replace("Indra", "RAJADHANI").toUpperCase();
+                            String busRegNum = null;
+                            String busType = null;
 
-                            if(singleBus[0].equals("AP11Z6086") || singleBus[0].equals("AP11Z6087") ||
-                                    singleBus[0].equals("AP11Z6084") || singleBus[0].equals("AP11Z6093") ||
-                                    singleBus[0].equals("AP11Z6096")
-                            || singleBus[0].contains("TS10")) {
-                                busType = "METRO LUXURY AC";
+                            for(int j = 0; j < busIdDepotType.length; j++) {
+                                String[] regAndID = busIdDepotType[j].split(",");
+                                if(regAndID[1].equals(id)) {
+                                    busRegNum = regAndID[0];
+                                    busType = regAndID[3].toUpperCase();
+                                }
                             }
-                            if(singleBus[0].equals("TS07Z4024") || singleBus[0].equals("TS07Z4023") ||
-                                    singleBus[0].equals("TS07Z4001") || singleBus[0].equals("TS07Z4053") ||
-                                    singleBus[0].equals("TS07Z4031") || singleBus[0].equals("TS07Z4030")
-                                    || singleBus[0].equals("TS07Z4002") || singleBus[0].equals("TS07Z4034")
-                                    || singleBus[0].equals("TS07Z4056") || singleBus[0].equals("TS07Z4046")
-                                    || singleBus[0].equals("TS07Z4041") || singleBus[0].equals("TS07Z4040")
-                                    || singleBus[0].equals("TS07Z4039")) {
-                                busType = "METRO DELUXE";
-                            }
-
 
                             String buttonText;
 
                             if(singleBus[10].equals("Buses in Depot")) {
-                                buttonText = ("\n" + singleBus[0] + "   -   " + busType + "\n" +
+                                buttonText = ("\n" + busRegNum + "   -   " + busType + "\n" +
                                         "Depot: " + singleBus[8] + "\n" +
                                         "Last seen: in " + singleBus[8] + " depot\n");
                             }
                             else {
-                                buttonText = ("\n" + singleBus[0] + "   -   " + busType + "\n" +
+                                buttonText = ("\n" + busRegNum + "   -   " + busType + "\n" +
                                         "Depot: " + singleBus[8] + "\n" +
                                         "Last seen: near " + singleBus[4].split("from ")[1] + "\n");
                             }
@@ -318,7 +292,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                             } else if (busType.equals("METRO DELUXE") || busType.contains("GARUDA") || busType.equals("RAJADHANI")) {
                                 b.setBackgroundResource(R.drawable.deluxe_bg);
                                 b.setTextColor(Color.WHITE);
-                            } else if (busType.contains("LOW FLOOR") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
+                            } else if (busType.equals("LOW FLOOR AC") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
                                 b.setBackgroundResource(R.drawable.lf_bg);
                                 b.setTextColor(Color.WHITE);
                             } else if (busType.equals("DELUXE") || busType.equals("VENNELA") || busType.equals("METRO LUXURY AC")) {
@@ -333,6 +307,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                                     searchInProgress = false;
                                     Intent singleBusIntent = new Intent(BusTypeDepotSearchActivity.this, SingleBusActivity.class);
                                     singleBusIntent.putExtra("busRegNumString", busRegNumString);
+                                    singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
                                     startActivity(singleBusIntent);
                                 }
                             });
@@ -359,6 +334,14 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                 }
             }
             searchInProgress = false;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    searchButton.setVisibility(View.VISIBLE);
+                }
+            });
+
         }
 
         public void progressBarUpdate(int progress) {
@@ -375,7 +358,7 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 
@@ -468,37 +451,5 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                     haveConnectedMobile = true;
         }
         return haveConnectedWifi || haveConnectedMobile;
-    }
-
-    private class LogAction extends Thread {
-
-        String logString;
-
-        public LogAction (String logString) {
-            this.logString = logString;
-        }
-
-        public void run() {
-            URL url = null;
-
-            String currentDate = new SimpleDateFormat("MM-dd HH:mm").format(new Date());
-
-            logString = currentDate + "-" + logString;
-
-            try {
-                logString = URLEncoder.encode(logString, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            if(logString.length() <= 50) {
-                try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                String dummy = getContentFromURL(url);
-            }
-        }
     }
 }

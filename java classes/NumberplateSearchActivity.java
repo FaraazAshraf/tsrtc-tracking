@@ -9,25 +9,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class NumberplateSearchActivity extends AppCompatActivity {
 
     AutoCompleteTextView allBusesACTV;
-    ProgressBar loadingNumberplatesProgressBar;
     Toolbar toolbar;
     TextView loadingNumberplatesTextView;
 
@@ -35,12 +28,11 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
     String [] allBusRegNums;
 
+    String[] busIdDepotType;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_numerplate_search);
-
-        loadingNumberplatesProgressBar = findViewById(R.id.loadingNumberplatesProgressBar);
-        loadingNumberplatesProgressBar.setVisibility(View.VISIBLE);
 
         loadingNumberplatesTextView = findViewById(R.id.loadingNumberplatesTextView);
         loadingNumberplatesTextView.setVisibility(View.VISIBLE);
@@ -52,6 +44,8 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
         searchButton = findViewById(R.id.numberplateSearchButton);
         searchButton.setVisibility(View.INVISIBLE);
+
+        busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
 
         new ShowAllBuses().start();
 
@@ -92,9 +86,8 @@ public class NumberplateSearchActivity extends AppCompatActivity {
                 if(validRegNum) {
                     Intent singleBusIntent = new Intent(NumberplateSearchActivity.this, SingleBusActivity.class);
 
-                    new LogAction(chosenBusRegNum).start();
-
                     singleBusIntent.putExtra("busRegNumString", chosenBusRegNum);
+                    singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
                     startActivity(singleBusIntent);
                 }
                 else {
@@ -106,31 +99,20 @@ public class NumberplateSearchActivity extends AppCompatActivity {
 
     private class ShowAllBuses extends Thread {
         public void run() {
-            String urlContent = null;
 
-            try {
-                urlContent = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-
-            allBusRegNums = new String[urlContent.split(";").length];
+            allBusRegNums = new String[busIdDepotType.length];
             final int numBuses = allBusRegNums.length;
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loadingNumberplatesTextView.setText("Connected!\nLoading buses....");
+                }
+            });
+
             for(int i = 0; i < numBuses; i++) {
-                String busRegNum = urlContent.split(";")[i].split(",")[0];
-                busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                        .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                        .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
+                String busRegNum = busIdDepotType[i].split(",")[0];
                 allBusRegNums[i] = busRegNum;
-                final int finalI = i;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadingNumberplatesTextView.setText("Loading buses...");
-                    }
-                });
             }
 
             runOnUiThread(new Runnable() {
@@ -139,7 +121,6 @@ public class NumberplateSearchActivity extends AppCompatActivity {
                     ArrayAdapter<String> allBusesAdapter = new ArrayAdapter<>(NumberplateSearchActivity.this, android.R.layout.simple_list_item_1, allBusRegNums);
                     allBusesACTV.setAdapter(allBusesAdapter);
 
-                    loadingNumberplatesProgressBar.setVisibility(View.INVISIBLE);
                     loadingNumberplatesTextView.setVisibility(View.INVISIBLE);
 
                     toolbar.setVisibility(View.VISIBLE);
@@ -150,40 +131,8 @@ public class NumberplateSearchActivity extends AppCompatActivity {
         }
     }
 
-    private class LogAction extends Thread {
-
-        String logString;
-
-        public LogAction (String logString) {
-            this.logString = logString;
-        }
-
-        public void run() {
-            URL url = null;
-
-            String currentDate = new SimpleDateFormat("MM-dd HH:mm").format(new Date());
-
-            logString = currentDate + "-" + logString;
-
-            try {
-                logString = URLEncoder.encode(logString, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            if(logString.length() <= 50) {
-                try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                String dummy = getContentFromURL(url);
-            }
-        }
-    }
-
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

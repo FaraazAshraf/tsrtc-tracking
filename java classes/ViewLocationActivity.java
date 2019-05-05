@@ -27,6 +27,8 @@ public class ViewLocationActivity extends AppCompatActivity {
     WebView webView1, webView2;
     TextView lastUpdatedTextView;
 
+    String busID;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_location);
@@ -62,9 +64,9 @@ public class ViewLocationActivity extends AppCompatActivity {
             }
         });
 
-        String busID = getIntent().getExtras().getString("busID");
+        busID = getIntent().getExtras().getString("busID");
 
-        new RunTracker(busID).start();
+        new Refresh10Sec().start();
 
     }
 
@@ -73,18 +75,12 @@ public class ViewLocationActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private class RunTracker extends Thread {
-
-        String busID;
-
-        RunTracker(String busID) {
-            this.busID = busID;
-        }
+    private class Refresh10Sec extends Thread {
 
         public void run() {
 
             while(keepRefreshing) {
-                new ShowLocation(busID).start();
+                new ShowLocation().start();
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
@@ -94,13 +90,20 @@ public class ViewLocationActivity extends AppCompatActivity {
         }
     }
 
-    private class ShowLocation extends Thread {
+    protected void onPause() {
+        super.onPause();
+        keepRefreshing = false;
+    }
 
-        String busID;
-
-        ShowLocation(String busID) {
-            this.busID = busID;
+    protected void onResume() {
+        super.onResume();
+        if(!keepRefreshing) {
+            keepRefreshing = true;
+            new Refresh10Sec().start();
         }
+    }
+
+    private class ShowLocation extends Thread {
 
         public void run() {
 
@@ -123,7 +126,6 @@ public class ViewLocationActivity extends AppCompatActivity {
                 gpsCoordsOld = gpsCoords;
 
                 if (count % 2 == 0) {
-
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -149,7 +151,8 @@ public class ViewLocationActivity extends AppCompatActivity {
                         }
                     });
 
-                } else {
+                }
+                else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -180,7 +183,7 @@ public class ViewLocationActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

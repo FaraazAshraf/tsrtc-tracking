@@ -18,20 +18,20 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
     ArrayList<String> validBuses;
     ArrayList<String> validStops;
+
+    String[] busIdDepotType;
+
     String chosenRoute;
+
     ProgressBar progressBar;
     TextView actionTextView;
 
@@ -40,8 +40,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
     TextView noBusesTextView;
 
-    Button scanButtonMethod1;
-    Button scanButtonMethod2;
+    Button routeSearchButton;
 
     EditText routeNumEditText;
 
@@ -67,46 +66,21 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
         keepScanning = true;
 
-        scanButtonMethod1 = findViewById(R.id.scanButtonMethod1);
-        scanButtonMethod1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                routeNumEditText = findViewById(R.id.routeNumEditText);
-                chosenRoute = routeNumEditText.getText().toString().toUpperCase();
-                if(chosenRoute.equals(""))
-                    Toast.makeText(SearchBusesOnRouteActivity.this, "Please enter something!", Toast.LENGTH_LONG).show();
-                else {
-                    if(connectedToInternet()) {
-                        new LogAction(chosenRoute).start();
-                        chosenRoute = chosenRoute.split(" ")[0].split("/")[0];
-                        noBusesTextView.setVisibility(View.INVISIBLE);
-                        validBuses.clear();
-                        validStops.clear();
-                        noBusesFound = true;
-                        busesLinearLayout.removeAllViews();
-                        keepScanning = true;
-                        progressBar.setProgress(0);
-                        scanButtonMethod1.setVisibility(View.INVISIBLE);
-                        scanButtonMethod2.setVisibility(View.INVISIBLE);
-                        new RunScannerMethod1().start();
-                    }
-                    else
-                        Toast.makeText(SearchBusesOnRouteActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        routeNumEditText = findViewById(R.id.routeNumEditText);
 
-        scanButtonMethod2 = findViewById(R.id.scanButtonMethod2);
-        scanButtonMethod2.setOnClickListener(new View.OnClickListener() {
+        busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
+
+        routeSearchButton = findViewById(R.id.routeNumSearchButton);
+        routeSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                routeNumEditText = findViewById(R.id.routeNumEditText);
+
                 chosenRoute = routeNumEditText.getText().toString().toUpperCase();
+
                 if(chosenRoute.equals(""))
                     Toast.makeText(SearchBusesOnRouteActivity.this, "Please enter something!", Toast.LENGTH_LONG).show();
                 else {
                     if(connectedToInternet()) {
-                        new LogAction(chosenRoute).start();
                         chosenRoute = chosenRoute.split(" ")[0].split("/")[0];
                         noBusesTextView.setVisibility(View.INVISIBLE);
                         validBuses.clear();
@@ -115,9 +89,8 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                         busesLinearLayout.removeAllViews();
                         keepScanning = true;
                         progressBar.setProgress(0);
-                        scanButtonMethod1.setVisibility(View.INVISIBLE);
-                        scanButtonMethod2.setVisibility(View.INVISIBLE);
-                        new RunScannerMethod2().start();
+                        routeSearchButton.setVisibility(View.INVISIBLE);
+                        new RunScannerMethod1().start();
                     }
                     else
                         Toast.makeText(SearchBusesOnRouteActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
@@ -149,18 +122,12 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
             try {
                 url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=0,67&flag=28");
-
             } catch (MalformedURLException e) {
-                keepScanning = false;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SearchBusesOnRouteActivity.this, "ERROR. Check your internet and try again.", Toast.LENGTH_LONG).show();
-                    }
-                });
-                return;
+                e.printStackTrace();
             }
+
             urlContent = getContentFromURL(url);
+
             final String[] allRoutes = urlContent.split(";");
             //10,SECUNDERABAD,SANATH NAGAR ...list of all routes + routeNums
 
@@ -176,7 +143,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(SearchBusesOnRouteActivity.this, "Route not found.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SearchBusesOnRouteActivity.this, "Route not found", Toast.LENGTH_LONG).show();
                         actionTextView.setVisibility(View.INVISIBLE);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
@@ -187,13 +154,13 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                 for (int i = 0; i < allRoutes.length && keepScanning; i++) {
 
                     final int i2 = i;
-
                     final int finalCompleted = completedRoutes;
                     final int finalNumValid = numValidRoutes;
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            progressBar.setProgress((finalCompleted * 100) / finalNumValid);
+                            progressBar.setProgress((finalCompleted * 50) / finalNumValid);
                         }
                     });
 
@@ -206,31 +173,69 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                             }
                         });
                         try {
-                            url = new URL("http://125.16.1.204:8080//bats/appQuery.do?query=" + allRoutes[i].split(",")[0] + ",0,67&flag=8");
+                            url = new URL("http://125.16.1.204:8080//bats/appQuery.do?query=" + allRoutes[i].split(",")[0].replace(" ", "%20") + ",0,67&flag=8");
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
                         }
                         urlContent = getContentFromURL(url);
                         //183,SECUNDERABAD TO SANATH NAGAR;...list of sub-routes WITHIN the main route
                         //eg. 300D will give DSNR->JNTU and JNTU->DSNR as sub-routes
+                        //we need those IDs to put in flag=12 to get buses
 
-                        if (!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
-                            String singleRouteData[] = urlContent.split(";");
+                        String[] subRoutes = urlContent.split(";");
+
+                        if (!(urlContent.equals("No records found.") || urlContent.equals("null")
+                                || urlContent.equals(""))) {
+
                             //183,SECUNDERABAD TO SANATH NAGAR
-                            for (String singleRoute : singleRouteData) {
+                            for (String subRoute : subRoutes) {
+
+                                //building validStops for method 2 is done here only to improve speed
                                 try {
-                                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + singleRoute.split(",")[0] + "&flag=12");
+                                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + subRoute.split(",")[0] + ",0,67&flag=4");
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                }
+
+                                urlContent = getContentFromURL(url);
+                                //787,17.43451,78.50125,SECUNDERABAD,183;
+                                if (!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
+                                    String[] allStops = urlContent.split(";");
+                                    for (int j = 0; j < allStops.length; /*dynamic increment*/) {
+
+                                        String stop = allStops[j];
+                                        if (!validStops.contains(stop.split(",")[3])) {
+                                            validStops.add(stop.split(",")[3]);
+                                        }
+
+                                        if (allStops.length > 50)
+                                            j += 8;
+                                        else if (allStops.length > 35)
+                                            j += 6;
+                                        else if (allStops.length > 10)
+                                            j += 4;
+                                        else //less than 10 stops to search
+                                            j += 1;
+                                    }
+                                }
+                                //above code is for building validStops used in method 2
+
+                                try {
+                                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + subRoute.split(",")[0] + "&flag=12");
                                 } catch (MalformedURLException e) {
                                     e.printStackTrace();
                                 }
                                 urlContent = getContentFromURL(url);
                                 //now we have the buses reportedly running on that particular sub-route
                                 //1874,AP11Z7281,17.263527,78.389748,RANIGUNJ 2,AP11Z7281-LOW FLOOR AC;
-                                //we need to take the IDs and verify if they are live using flag=13
+                                //we need to take the IDs and verify if they are live using flag=13 (10 mins rule)
 
-                                if (!urlContent.equalsIgnoreCase("No records found.") && !urlContent.equalsIgnoreCase("null") && !urlContent.equalsIgnoreCase("")) {
+                                if (!urlContent.equalsIgnoreCase("No records found.") && !urlContent.equalsIgnoreCase("null")
+                                        && !urlContent.equalsIgnoreCase("")) {
                                     String[] possibleBuses = urlContent.split(";");
                                     for (String bus : possibleBuses) {
+
+                                        //bus = 1874,AP11Z7281,17.263527,78.389748,RANIGUNJ 2,AP11Z7281-LOW FLOOR AC;
 
                                         String busID = bus.split(",")[0];
                                         try {
@@ -251,117 +256,116 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
                                         String[] VMUFormatted = urlContent.split(",");
                                         String busStatus = VMUFormatted[10].toUpperCase();
-                                        String busType = VMUFormatted[9].toUpperCase();
-                                        String lastUpdated = VMUFormatted[5].substring(0, VMUFormatted[5].lastIndexOf("."));
 
-                                        String source = stopsDataFormattedArray[0].split(",")[1];
-                                        String destination = stopsDataFormattedArray[stopsDataFormattedArray.length - 1].split(",")[1];
+                                        String busType = null;
+                                        String busRegNum = null;
 
-                                        int lastSeenAtStopIndex = 12345;
-                                        for (int j = (stopsDataFormattedArray.length) - 1; j >= 0; j--) {
-                                            String singleStopData[] = stopsDataFormattedArray[j].split(",");
-                                            if (singleStopData[2].equals("Y")) {
-                                                lastSeenAtStopIndex = j;
-                                                break;
+                                        for(int j = 0; j < busIdDepotType.length; j++) {
+                                            String[] singleSavedBus = busIdDepotType[j].split(",");
+                                            if(singleSavedBus[1].equals(busID)) {
+                                                busRegNum = singleSavedBus[0];
+                                                busType = singleSavedBus[3].toUpperCase();
                                             }
                                         }
 
-                                        boolean valid = true;
+                                        if(!validBuses.contains(busRegNum)) {
+                                            validBuses.add(busRegNum);
 
-                                        if (busStatus.equalsIgnoreCase("Buses in Depot"))
-                                            valid = false;
-                                        if (lastSeenAtStopIndex == 12345 ||
-                                                lastSeenAtStopIndex == (stopsDataFormattedArray.length) - 1)
-                                            valid = false;
+                                            String lastUpdated = VMUFormatted[5].substring(0, VMUFormatted[5].lastIndexOf("."));
 
-                                        if (valid) {
-                                            String lastUpdatedTime = lastUpdated.substring(lastUpdated.indexOf(" ") + 1, lastUpdated.length());
-                                            String lastSeenTimeString = stopsDataFormattedArray[lastSeenAtStopIndex].split(",")[4];
-                                            lastSeenTimeString = lastSeenTimeString.substring(11, 19);
-                                            int timeDifference = Integer.parseInt(lastUpdatedTime.replace(":", ""))
-                                                    - Integer.parseInt(lastSeenTimeString.replace(":", ""));
-                                            String lastUpdatedTimeHour = lastUpdatedTime.substring(0, 2);
-                                            String lastSeenTimeHour = lastSeenTimeString.substring(0, 2);
-                                            String nextStopEta = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4];
+                                            String source = stopsDataFormattedArray[0].split(",")[1];
+                                            String destination = stopsDataFormattedArray[stopsDataFormattedArray.length - 1].split(",")[1];
 
-                                            if (((lastUpdatedTimeHour.equalsIgnoreCase(lastSeenTimeHour) && timeDifference >= 1000)
-                                                    ||
-                                                    (!lastUpdatedTimeHour.equalsIgnoreCase(lastSeenTimeHour) && timeDifference >= 5000))
-                                                    && (nextStopEta.equalsIgnoreCase("null"))
-                                                    && (!destination.contains("AIRPORT") && !destination.contains("PUSHPAK"))
-                                                    && (!source.contains("AIRPORT") && !source.contains("PUSHPAK"))) {
+                                            int lastSeenAtStopIndex = 12345;
+                                            for (int j = (stopsDataFormattedArray.length) - 1; j >= 0; j--) {
+                                                String[] singleStopData = stopsDataFormattedArray[j].split(",");
+                                                if (singleStopData[2].equals("Y")) {
+                                                    lastSeenAtStopIndex = j;
+                                                    break;
+                                                }
+                                            }
+
+                                            boolean valid = true;
+
+                                            if (busStatus.equalsIgnoreCase("Buses in Depot"))
                                                 valid = false;
-                                            }
-                                        }
+                                            if (lastSeenAtStopIndex == 12345 ||
+                                                    lastSeenAtStopIndex == (stopsDataFormattedArray.length) - 1)
+                                                valid = false;
 
-                                        if (valid) {
+                                            if (valid) {
+                                                String lastUpdatedTime = lastUpdated.substring(lastUpdated.indexOf(" ") + 1);
+                                                String lastSeenTimeString = stopsDataFormattedArray[lastSeenAtStopIndex].split(",")[4];
+                                                lastSeenTimeString = lastSeenTimeString.substring(11, 19);
+
+                                                int timeDifference = Integer.parseInt(lastUpdatedTime.replace(":", ""))
+                                                        - Integer.parseInt(lastSeenTimeString.replace(":", ""));
+
+                                                String lastUpdatedTimeHour = lastUpdatedTime.substring(0, 2);
+                                                String lastSeenTimeHour = lastSeenTimeString.substring(0, 2);
+                                                String nextStopEta = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4];
+
+                                                if (((lastUpdatedTimeHour.equalsIgnoreCase(lastSeenTimeHour) && timeDifference >= 1000)
+                                                        ||
+                                                        (!lastUpdatedTimeHour.equalsIgnoreCase(lastSeenTimeHour) && timeDifference >= 5000))
+                                                        && (nextStopEta.equalsIgnoreCase("null"))
+                                                        && (!destination.contains("AIRPORT") && !destination.contains("PUSHPAK"))
+                                                        && (!source.contains("AIRPORT") && !source.contains("PUSHPAK"))) {
+                                                    valid = false;
+                                                }
+                                            }
+
+                                            if (valid) {
                                             /*
                                             if previous stop was seen less than 10 mins ago
                                             and it's not an airport bus
                                             and there is some next stop
                                             then display the bus as a valid bus on this route
                                              */
-                                            String nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
-                                            final String busRegNum = VMUFormatted[0].toUpperCase();
+                                                String nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
 
-                                            if (busRegNum.equals("AP11Z6086") || busRegNum.equals("AP11Z6087") ||
-                                                    busRegNum.equals("AP11Z6084") || busRegNum.equals("AP11Z6093") ||
-                                                    busRegNum.equals("AP11Z6096")
-                                            || busRegNum.contains("TS10")) {
-                                                busType = "METRO LUXURY AC";
-                                            }
+                                                String buttonText = "\n"
+                                                        + busRegNum + "   -   " + busType + "\n" +
+                                                        "Route:  " + allRoutes[i].split(",")[0].replace("300D", "300/126") + "\n" +
+                                                        "Towards: " + destination + "\n" +
+                                                        "Next stop: " + nextStop
+                                                        + "\n";
 
-                                            if(busRegNum.equals("TS07Z4024") || busRegNum.equals("TS07Z4023") ||
-                                                    busRegNum.equals("TS07Z4001") || busRegNum.equals("TS07Z4053") ||
-                                                    busRegNum.equals("TS07Z4031") || busRegNum.equals("TS07Z4030")
-                                                    || busRegNum.equals("TS07Z4002") || busRegNum.equals("TS07Z4034")
-                                                    || busRegNum.equals("TS07Z4056")) {
-                                                busType = "METRO DELUXE";
-                                            }
-
-                                            String buttonText = "\n"
-                                                    + busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                                                    .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                                                    .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                                    .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                                                    .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008") + "   -   " + busType + "\n" +
-                                                    "Route:  " + allRoutes[i].split(",")[0] + "\n" +
-                                                    "Towards: " + destination + "\n" +
-                                                    "Next stop: " + nextStop
-                                                    + "\n";
-
-                                            final Button b = new Button(SearchBusesOnRouteActivity.this);
-                                            b.setText(buttonText);
-                                            if (busType.contains("EXPRESS")) {
-                                                b.setBackgroundResource(R.drawable.express_bg);
-                                                b.setTextColor(Color.WHITE);
-                                            } else if (busType.contains("DELUXE")) {
-                                                b.setBackgroundResource(R.drawable.deluxe_bg);
-                                                b.setTextColor(Color.WHITE);
-                                            } else if (busType.contains("LOW FLOOR")) {
-                                                b.setBackgroundResource(R.drawable.lf_bg);
-                                                b.setTextColor(Color.WHITE);
-                                            } else if (busType.contains("LUXURY")) {
-                                                b.setBackgroundResource(R.drawable.deluxe_ld_bg);
-                                                b.setTextColor(Color.WHITE);
-                                            }
-                                            b.setOnClickListener(new View.OnClickListener() {
-                                                public void onClick(View v) {
-                                                    Intent singleBusIntent = new Intent(SearchBusesOnRouteActivity.this, SingleBusActivity.class);
-                                                    singleBusIntent.putExtra("busRegNumString", busRegNum);
-                                                    keepScanning = false;
-                                                    startActivity(singleBusIntent);
+                                                final Button b = new Button(SearchBusesOnRouteActivity.this);
+                                                b.setText(buttonText);
+                                                if (busType.equals("METRO EXPRESS")) {
+                                                    b.setBackgroundResource(R.drawable.express_bg);
+                                                    b.setTextColor(Color.WHITE);
+                                                } else if (busType.equals("METRO DELUXE")) {
+                                                    b.setBackgroundResource(R.drawable.deluxe_bg);
+                                                    b.setTextColor(Color.WHITE);
+                                                } else if (busType.equals("LOW FLOOR AC")) {
+                                                    b.setBackgroundResource(R.drawable.lf_bg);
+                                                    b.setTextColor(Color.WHITE);
+                                                } else if (busType.equals("METRO LUXURY AC")) {
+                                                    b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                                                    b.setTextColor(Color.WHITE);
                                                 }
-                                            });
+                                                final String finalBusRegNum = busRegNum;
+                                                b.setOnClickListener(new View.OnClickListener() {
+                                                    public void onClick(View v) {
+                                                        Intent singleBusIntent = new Intent(SearchBusesOnRouteActivity.this, SingleBusActivity.class);
+                                                        singleBusIntent.putExtra("busRegNumString", finalBusRegNum);
+                                                        singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
+                                                        keepScanning = false;
+                                                        startActivity(singleBusIntent);
+                                                    }
+                                                });
 
-                                            noBusesFound = false;
+                                                noBusesFound = false;
 
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    busesLinearLayout.addView(b);
-                                                }
-                                            });
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        busesLinearLayout.addView(b);
+                                                    }
+                                                });
+                                            }
                                         }
                                     }
                                 }
@@ -369,249 +373,142 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                         }
                     }
                 }
-            }
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    actionTextView.setText("Finished searching.");
-                    progressBar.setProgress(100);
-                    scanButtonMethod1.setVisibility(View.VISIBLE);
-                    scanButtonMethod2.setVisibility(View.VISIBLE);
-                }
-            });
+                //below here is method 2
 
-            if(noBusesFound) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        noBusesTextView.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        }
-    }
+                for (int j = 0; j < validStops.size()-1 && keepScanning; j++) {
 
-    private class RunScannerMethod2 extends Thread {
-
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    actionTextView.setText("Searching for route data. Please wait...");
-                    actionTextView.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            });
-            URL url = null;
-            String urlContent;
-
-            try {
-                url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=0,67&flag=28");
-                //10,SECUNDERABAD,SANATH NAGAR;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            urlContent = getContentFromURL(url);
-            final String[] allRoutes = urlContent.split(";");
-            //10,SECUNDERABAD,SANATH NAGAR
-
-            for(int i = 0; i < allRoutes.length && keepScanning; i++) {
-                if(allRoutes[i].contains(chosenRoute)) {
-                    final int i2 = i;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            actionTextView.setText("Inspecting " + allRoutes[i2].split(",")[0]);
-                        }
-                    });
                     try {
-                        url = new URL("http://125.16.1.204:8080//bats/appQuery.do?query=" + allRoutes[i].split(",")[0] + ",0,67&flag=8");
+                        url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + validStops.get(j).replace("airport pushpak", "airport shamshabad pushpak stop").replace(" ", "%20") + ",0,67&flag=7");
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
+
+                    final int progress = 50+(50*(j+1)/(validStops.size()));
+                    final String currentStopName = validStops.get(j);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progress);
+                            actionTextView.setText("Scanning " + currentStopName);
+                        }
+                    });
+
                     urlContent = getContentFromURL(url);
-                    //183,SECUNDERABAD TO SANATH NAGAR;
+                    //AP11Z7159-METRO EXPRESS,1P/25I,KOTI,10:16:01,645,17.466459,78.505463,OLD ALWAL;
 
-                    if(!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
-                        String singleRouteData[] = urlContent.split(";");
-                        ////183,SECUNDERABAD TO SANATH NAGAR
-                        for (String singleRoute : singleRouteData) {
-                            try {
-                                url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query="+  singleRoute.split(",")[0] +",0,67&flag=4");
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            }
+                    if (!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
+                        String[] allBuses;
+                        allBuses = urlContent.split(";");
 
-                            urlContent = getContentFromURL(url);
-                            //787,17.43451,78.50125,SECUNDERABAD,183;
-                            if(!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
-                                String[] allStops = urlContent.split(";");
-                                for (String stop : allStops) {
-                                    if (!validStops.contains(stop.split(",")[3])) {
-                                        validStops.add(stop.split(",")[3]);
-                                    }
+                        for (int n = 0; n < allBuses.length; n++) {
+                            allBuses[n] = allBuses[n].replaceFirst("-", ",");
+
+                            String busID = allBuses[n].split(",")[5];
+                            String busRegNum = null;
+                            String busType = null;
+
+                            for(int k = 0; k < busIdDepotType.length; k++) {
+                                String[] regAndID = busIdDepotType[k].split(",");
+                                if(regAndID[1].equals(busID)) {
+                                    busRegNum = regAndID[0];
+                                    busType = regAndID[3].toUpperCase();
                                 }
                             }
-                        }
+
+                            if (allBuses[n].split(",")[2].contains(chosenRoute)) {
+                                if (!validBuses.contains(busRegNum)) {
+                                    //*********above line needs to be changed to use modified reg nums
+
+                                    URL url2 = null;
+                                    try {
+                                        url2 = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busID + "&flag=13");
+                                    } catch (MalformedURLException e) {
+                                        //should never happen
+                                    }
+                                    String stopsDataUnformattedString = getContentFromURL(url2);
+                                    String[] stopsDataFormattedArray = stopsDataUnformattedString.split(";");
+                                    int lastSeenAtStopIndex = 12345;
+                                    for (int k = (stopsDataFormattedArray.length)-1; k >=0; k--) {
+                                        String[] singleStopData = stopsDataFormattedArray[k].split(",");
+                                        if (singleStopData[2].equals("Y")) {
+                                            lastSeenAtStopIndex = k;
+                                            break;
+                                        }
+                                    }
+
+                                    String nextStop = "undefined";
+                                    String nextStopETA = "undefined";
+
+                                    if(lastSeenAtStopIndex < stopsDataFormattedArray.length) {
+                                        nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
+                                        if(stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4].length() > 15)
+                                            nextStopETA = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4].substring(11, 16);
+                                    }
+
+                                    if(nextStopETA.equals("undefined"))
+                                        continue;
+
+                                    validBuses.add(busRegNum);
+
+                                    String buttonText = "\n" + busRegNum + "   -   " + busType +
+                                            "\nRoute: " + allBuses[n].split(",")[2].replace("300D", "300/126") +
+                                            "\nTowards: " + allBuses[n].split(",")[3] +
+                                            "\nNext stop: " + nextStop + " at " + nextStopETA + "\n";
+
+                                    final Button b = new Button(SearchBusesOnRouteActivity.this);
+                                    b.setText(buttonText);
+                                    if (busType.equals("METRO EXPRESS")) {
+                                        b.setBackgroundResource(R.drawable.express_bg);
+                                        b.setTextColor(Color.WHITE);
+                                    } else if (busType.equals("METRO DELUXE")) {
+                                        b.setBackgroundResource(R.drawable.deluxe_bg);
+                                        b.setTextColor(Color.WHITE);
+                                    } else if (busType.equals("LOW FLOOR AC")) {
+                                        b.setBackgroundResource(R.drawable.lf_bg);
+                                        b.setTextColor(Color.WHITE);
+                                    } else if(busType.equals("METRO LUXURY AC")) {
+                                        b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                                        b.setTextColor(Color.WHITE);
+                                    }
+
+                                    final String busRegNumString = busRegNum;
+                                    b.setOnClickListener(new View.OnClickListener() {
+                                        public void onClick(View v) {
+                                            Intent singleBusIntent = new Intent(SearchBusesOnRouteActivity.this, SingleBusActivity.class);
+                                            singleBusIntent.putExtra("busRegNumString", busRegNumString);
+                                            singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
+                                            keepScanning = false;
+                                            startActivity(singleBusIntent);
+                                        }
+                                    });
+
+                                    b.setVisibility(View.VISIBLE);
+
+                                    noBusesFound = false;
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            busesLinearLayout.addView(b);
+                                        }
+                                    });
+                                }
+                            }
+                        }//for all buses
                     }
-                }
+                }//for valid stops
+
+                //above here is method 2
+
             }
-
-            if(validStops.size() == 0) {
-                keepScanning = false;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(SearchBusesOnRouteActivity.this, "Route not found.", Toast.LENGTH_LONG).show();
-                        actionTextView.setVisibility(View.INVISIBLE);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        scanButtonMethod1.setVisibility(View.VISIBLE);
-                        scanButtonMethod2.setVisibility(View.VISIBLE);
-                    }
-                });
-                noBusesTextView.setVisibility(View.INVISIBLE);
-                return;
-            }
-
-            for (int i = 0; i < validStops.size()-1 && keepScanning;/*dynamic increment*/) {
-
-                try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + validStops.get(i).replace("airport pushpak", "airport shamshabad pushpak stop").replace(" ", "%20") + ",0,67&flag=7");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-
-                final int progress = 100*(i+1)/(validStops.size());
-                final String currentStopName = validStops.get(i);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setProgress(progress);
-                        actionTextView.setText("Scanning " + currentStopName);
-                    }
-                });
-
-                urlContent = getContentFromURL(url);
-                //AP11Z7159-METRO EXPRESS,1P/25I,KOTI,10:16:01,645,17.466459,78.505463,OLD ALWAL;
-
-                if (!(urlContent.equals("No records found.") || urlContent.equals("null") || urlContent.equals(""))) {
-                    String[] allBuses;
-                    allBuses = urlContent.split(";");
-
-                    for (int n = 0; n < allBuses.length; n++) {
-                        allBuses[n] = allBuses[n].replaceFirst("-", ",");
-                        if (allBuses[n].split(",")[2].contains(chosenRoute)) {
-                            if (!validBuses.contains(allBuses[n].split(",")[0])) {
-
-                                URL url2 = null;
-                                try {
-                                    url2 = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + allBuses[n].split(",")[5] + "&flag=13");
-                                } catch (MalformedURLException e) {
-                                    //should never happen
-                                }
-                                String stopsDataUnformattedString = getContentFromURL(url2);
-                                String[] stopsDataFormattedArray = stopsDataUnformattedString.split(";");
-                                int lastSeenAtStopIndex = 12345;
-                                for (int k = (stopsDataFormattedArray.length)-1; k >=0; k--) {
-                                    String singleStopData[] = stopsDataFormattedArray[k].split(",");
-                                    if (singleStopData[2].equals("Y")) {
-                                        lastSeenAtStopIndex = k;
-                                        break;
-                                    }
-                                }
-
-                                String nextStop = "error";
-                                String nextStopETA = "error";
-
-                                if(lastSeenAtStopIndex < stopsDataFormattedArray.length) {
-                                    nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
-                                    if(stopsDataFormattedArray[lastSeenAtStopIndex + 1].length() > 10)
-                                        nextStopETA = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[4].substring(11, 16);
-                                }
-
-                                if(nextStopETA.equals("null"))
-                                    continue;
-
-                                validBuses.add(allBuses[n].split(",")[0]);
-
-                                String busType = allBuses[n].split(",")[1];
-                                String busRegNum = allBuses[n].split(",")[0];
-
-                                if(busRegNum.equals("AP11Z6086") || busRegNum.equals("AP11Z6087") ||
-                                        busRegNum.equals("AP11Z6084") || busRegNum.equals("AP11Z6093") ||
-                                        busRegNum.equals("AP11Z6096")
-                                || busRegNum.contains("TS10")) {
-                                    busType = "METRO LUXURY AC";
-                                }
-
-                                String buttonText = "\n" + busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                                        .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                                        .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008") + "   -   " + busType +
-                                        "\nRoute: " + allBuses[n].split(",")[2] +
-                                        "\nTowards: " + allBuses[n].split(",")[3] +
-                                        "\nNext stop: " + nextStop + " at " + nextStopETA + "\n";
-
-                                final Button b = new Button(SearchBusesOnRouteActivity.this);
-                                b.setText(buttonText);
-                                if (allBuses[n].split(",")[1].contains("EXPRESS")) {
-                                    b.setBackgroundResource(R.drawable.express_bg);
-                                    b.setTextColor(Color.WHITE);
-                                } else if (allBuses[n].split(",")[1].contains("DELUXE")) {
-                                    b.setBackgroundResource(R.drawable.deluxe_bg);
-                                    b.setTextColor(Color.WHITE);
-                                } else if (allBuses[n].split(",")[1].contains("LOW FLOOR")) {
-                                    b.setBackgroundResource(R.drawable.lf_bg);
-                                    b.setTextColor(Color.WHITE);
-                                } else if (busType.equals("METRO LUXURY AC")) {
-                                    b.setBackgroundResource(R.drawable.deluxe_ld_bg);
-                                    b.setTextColor(Color.WHITE);
-                                }
-
-                                final String busRegNumString = busRegNum;
-                                b.setOnClickListener(new View.OnClickListener() {
-                                    public void onClick(View v) {
-                                        Intent singleBusIntent = new Intent(SearchBusesOnRouteActivity.this, SingleBusActivity.class);
-                                        singleBusIntent.putExtra("busRegNumString", busRegNumString);
-                                        keepScanning = false;
-                                        startActivity(singleBusIntent);
-                                    }
-                                });
-
-                                b.setVisibility(View.VISIBLE);
-
-                                noBusesFound = false;
-
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        busesLinearLayout.addView(b);
-                                    }
-                                });
-                            }
-                        }
-                    }//for all buses
-                }
-                if(validStops.size() > 50)
-                    i += 5;
-                else if(validStops.size() > 25)
-                    i += 4;
-                else if(validStops.size() > 10)
-                    i += 3;
-                else //less than 10 stops to search
-                    i += 1;
-            }//for valid stops
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     actionTextView.setText("Finished searching.");
                     progressBar.setProgress(100);
-                    scanButtonMethod1.setVisibility(View.VISIBLE);
-                    scanButtonMethod2.setVisibility(View.VISIBLE);
+                    routeSearchButton.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -623,7 +520,6 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                     }
                 });
             }
-
         }
     }
 
@@ -633,7 +529,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 
@@ -726,37 +622,5 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                     haveConnectedMobile = true;
         }
         return haveConnectedWifi || haveConnectedMobile;
-    }
-
-    private class LogAction extends Thread {
-
-        String logString;
-
-        public LogAction (String logString) {
-            this.logString = logString;
-        }
-
-        public void run() {
-            URL url = null;
-
-            String currentDate = new SimpleDateFormat("MM-dd HH:mm").format(new Date());
-
-            logString = currentDate + "- ROUTE: " + logString;
-
-            try {
-                logString = URLEncoder.encode(logString, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            if(logString.length() <= 50) {
-                try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + logString + ",0,4,mobile,0,67&flag=15");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                String dummy = getContentFromURL(url);
-            }
-        }
     }
 }

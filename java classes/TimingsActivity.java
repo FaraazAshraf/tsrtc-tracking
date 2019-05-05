@@ -188,7 +188,7 @@ public class TimingsActivity extends AppCompatActivity {
                 }
             });
 
-            String timings[] = getContentFromURL(url).split(";");
+            String[] timings = getContentFromURL(url).split(";");
 
             if(timings[0].equals("No records found.") || timings[0].equals("")) {
                 runOnUiThread(new Runnable() {
@@ -274,13 +274,15 @@ public class TimingsActivity extends AppCompatActivity {
             for(int i = 0; i < numStops; i++) {
                 allStops[i] = urlContent.split(";")[i].split(",")[0];
             }
-            final ArrayAdapter<String> allStopsAdapter = new ArrayAdapter<>(TimingsActivity.this, android.R.layout.simple_list_item_1, allStops);
+            final ArrayAdapter<String> fromStopsAdapter = new ArrayAdapter<>(TimingsActivity.this, android.R.layout.simple_list_item_1, allStops);
+            final ArrayAdapter<String> toStopsAdapter = new ArrayAdapter<>(TimingsActivity.this, android.R.layout.simple_list_item_1, allStops);
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    fromStopACTV.setAdapter(allStopsAdapter);
-                    toStopACTV.setAdapter(allStopsAdapter);
+                    fromStopACTV.setAdapter(fromStopsAdapter);
+                    toStopACTV.setAdapter(toStopsAdapter);
+
                     loadingCircle.setVisibility(View.INVISIBLE);
                     fromStopACTV.setVisibility(View.VISIBLE);
                     toStopACTV.setVisibility(View.VISIBLE);
@@ -291,7 +293,7 @@ public class TimingsActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

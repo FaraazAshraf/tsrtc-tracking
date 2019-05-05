@@ -21,32 +21,33 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 public class SingleBusActivity extends AppCompatActivity {
 
     TextView mainTextView;
     TextView busIDTextView;
+
     String source;
     String destination;
     String lastSeenStopString;
     String lastSeenTimeString;
     String nextStop;
-    String busRegNumStringWrong;
-    String busRegNumString;
-    final Dictionary<String, String> busesAndIDs = new Hashtable();
 
+    String busRegNumString;
+    String busIDString;
     String busType;
+    String busDepot;
 
     Button showAllStopsButton;
     Button gpsButton;
 
-    boolean keepRefreshing = false;
+    boolean keepRefreshing = true;
 
     SharedPreferences sharedPref;
     Button addFavButton;
     Button removeFavButton;
+
+    String[] busIdDepotType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,22 +69,10 @@ public class SingleBusActivity extends AppCompatActivity {
         busIDTextView.setGravity(Gravity.CENTER);
 
         busRegNumString = getIntent().getExtras().getString("busRegNumString");
+        busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
 
-        busRegNumString = busRegNumString.replace("TS07Z3998", "AP11Z3998").replace("TS07Z4017", "AP11Z4017")
-                .replace("TS07Z4015", "AP11Z4015").replace("TS07Z3998", "AP11Z4040")
-                .replace("TS07Z4041", "AP11Z4041").replace("TS07Z4046", "AP11Z4046")
-                .replace("TS07Z4039", "AP11Z4039").replace("TS07Z4004", "AP7Z4004")
-                .replace("TS07Z4020", "AP7Z4020").replace("TS07Z4008", "AP07Z4008");
-
-        mainTextView.setText("Searching...");
-        busRegNumStringWrong = busRegNumString;
-        busRegNumString = busRegNumString.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
-
-        new PopulateDictionary().start();
+        mainTextView.setText("Connecting to server...");
+        new GetBusIDString().start();
 
         showAllStopsButton = findViewById(R.id.showAllStopsButton);
         showAllStopsButton.setVisibility(View.INVISIBLE);
@@ -92,13 +81,13 @@ public class SingleBusActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(connectedToInternet()) {
                     Intent allStopsActivityIntent = new Intent(SingleBusActivity.this, AllStopsActivity.class);
-                    allStopsActivityIntent.putExtra("busIDString", busesAndIDs.get(busRegNumStringWrong));
+                    allStopsActivityIntent.putExtra("busIDString", busIDString);
                     allStopsActivityIntent.putExtra("busRegNum", busRegNumString);
                     allStopsActivityIntent.putExtra("busType", busType);
                     startActivity(allStopsActivityIntent);
                 }
                 else
-                    Toast.makeText(SingleBusActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(SingleBusActivity.this, "Network error", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -118,14 +107,14 @@ public class SingleBusActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!sharedPref.contains("favouriteBuses")) {
                     String favouriteBuses = "";
-                    favouriteBuses += (busesAndIDs.get(busRegNumStringWrong) + ";");
+                    favouriteBuses += (busIDString + ";");
 
                     editor.putString("favouriteBuses", favouriteBuses);
                     editor.apply();
                 }
                 else {
                     String favouriteBuses = sharedPref.getString("favouriteBuses", "DEFAULT");
-                    favouriteBuses += (busesAndIDs.get(busRegNumStringWrong) + ";");
+                    favouriteBuses += (busIDString + ";");
 
                     editor.putString("favouriteBuses", favouriteBuses);
 
@@ -142,9 +131,8 @@ public class SingleBusActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String favouriteBuses = sharedPref.getString("favouriteBuses", "DEFAULT");
 
-                String busIDToDelete = busesAndIDs.get(busRegNumStringWrong);
+                String busIDToDelete = busIDString;
 
-                if(favouriteBuses.contains(busIDToDelete));
                 favouriteBuses = favouriteBuses.replace(busIDToDelete + ";", "");
 
                 editor.putString("favouriteBuses", favouriteBuses);
@@ -158,6 +146,19 @@ public class SingleBusActivity extends AppCompatActivity {
 
     }
 
+    protected void onPause() {
+        super.onPause();
+        keepRefreshing = false;
+    }
+
+    protected void onResume() {
+        super.onResume();
+        if(!keepRefreshing) {
+            keepRefreshing = true;
+            new Refresh10Sec().start();
+        }
+    }
+
     public void onBackPressed() {
         keepRefreshing = false;
         super.onBackPressed();
@@ -167,7 +168,7 @@ public class SingleBusActivity extends AppCompatActivity {
         public void run() {
             while(keepRefreshing) {
                 try {
-                    Thread.sleep(12000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -175,9 +176,14 @@ public class SingleBusActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            new GetBusData(busesAndIDs.get(busRegNumStringWrong)).start();
+                            new GetBusData().start();
                         }
                     });
+                }
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -185,13 +191,9 @@ public class SingleBusActivity extends AppCompatActivity {
 
     private class GetBusData extends Thread {
 
-        String busIDString;
-
-        public GetBusData(String busIDString) {
-            this.busIDString = busIDString;
-        }
-
         public void run() {
+
+            System.out.println(new Date().toString());
 
             //weHaveStopsData to see if flag=13 has anything
             //VMUDisconnected to see if VMU data is less than 10 days old
@@ -208,17 +210,17 @@ public class SingleBusActivity extends AppCompatActivity {
             }
 
             String stopsDataUnformattedString = getContentFromURL(url);
-            if(stopsDataUnformattedString.equals("No records found."))
+            if(stopsDataUnformattedString.equals("No records found.")) {
                 weHaveStopsData = false;
+            }
 
-            URL url2 = null;
             try {
-                url2 = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busIDString + "&flag=21");
+                url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=" + busIDString + "&flag=21");
             } catch (MalformedURLException e) {
                 //should never happen
             }
 
-            String VMUData = getContentFromURL(url2);
+            String VMUData = getContentFromURL(url);
             String[] VMUFormatted = VMUData.split(",");
 
             runOnUiThread(new Runnable() {
@@ -233,19 +235,29 @@ public class SingleBusActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mainTextView.setText("GPS has been disconnected.");
+                        mainTextView.setText("This bus has been rebuilt or scrapped.\nGPS has been disconnected.");
                     }
                 });
                 keepRefreshing = false;
             }
             else {
-                final String gpsCoords = VMUFormatted[6] + "," + VMUFormatted[7];
+
+                /*now we have a number of cases to consider
+                1. bus was not updated for 10 days
+                2. bus was updated in 10 days, but flag=13 has no result
+                3. both links have result, now here some subcases
+                    i. if bus is in depot, ignore everything else and display as not running
+                    ii. bus is not in depot, but flag=13 is wrong
+                    iii. flag=13 needs to be checked if wrong or not, and display accordingly
+                 */
+
+
                 String busStatus = VMUFormatted[10].toUpperCase();
-                final String busDepot = VMUFormatted[8].toUpperCase();
+
                 String busLandmark = VMUFormatted[4].toUpperCase();
                 busLandmark = busLandmark.split(" FROM ")[busLandmark.split(" FROM ").length-1];
                 busLandmark = "near " + busLandmark;
-                busType = VMUFormatted[9].toUpperCase().replace("INDRA","RAJADHANI");
+
                 final String lastUpdated = VMUFormatted[5].substring(0,VMUFormatted[5].lastIndexOf("."));
 
                 runOnUiThread(new Runnable() {
@@ -263,34 +275,23 @@ public class SingleBusActivity extends AppCompatActivity {
                     }
                 });
 
-                if(busRegNumString.equals("AP11Z6086") || busRegNumString.equals("AP11Z6087") ||
-                        busRegNumString.equals("AP11Z6084") || busRegNumString.equals("AP11Z6093") ||
-                        busRegNumString.equals("AP11Z6096")
-                || busRegNumString.contains("TS10")) {
-                    busType = "METRO LUXURY AC";
-                }
-
-                if(busRegNumString.equals("TS07Z4024") || busRegNumString.equals("TS07Z4023") ||
-                        busRegNumString.equals("TS07Z4001") || busRegNumString.equals("TS07Z4053") ||
-                        busRegNumString.equals("TS07Z4031") || busRegNumString.equals("TS07Z4030")
-                        || busRegNumString.equals("TS07Z4002") || busRegNumString.equals("TS07Z4034")
-                        || busRegNumString.equals("TS07Z4056")) {
-                    busType = "METRO DELUXE";
-                }
-
                 boolean differentMonth = false;
 
                 String currentDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                currentDate = currentDate.replaceAll("-", "").replaceAll(":","").replaceAll(" ", "");
-                double currentDateDouble = Double.parseDouble(currentDate);
-                String lastUpdated2 = lastUpdated;
-                if(!currentDate.substring(5,7).equals(lastUpdated2.substring(5,7))) {
+                double currentDateDouble = Double.parseDouble(currentDate.replaceAll("-", "").replaceAll(":","").replaceAll(" ", ""));
+
+                if(!currentDate.substring(5,7).equals(lastUpdated.substring(5,7))) {
                     differentMonth = true;
                 }
-                lastUpdated2 = lastUpdated2.replaceAll("-", "").replaceAll(":","").replaceAll(" ", "");
-                double lastUpdatedDouble = Double.parseDouble(lastUpdated2);
 
-                if(((currentDateDouble-lastUpdatedDouble > 10000000) && (!differentMonth))
+                double lastUpdatedDouble = Double.parseDouble(lastUpdated.replaceAll("-", "").replaceAll(":","").replaceAll(" ", ""));
+
+                //now we have two doubles, currentDateDouble and lastUpdatedDouble
+                //both are of the format yyyyMMddHHmmSS
+                //we need to verify that the bus was updated in the past 10 days
+                //currentDateDouble - lastUpdatedDouble should be greater than 10 days
+
+                if(((currentDateDouble - lastUpdatedDouble > 10000000) && (!differentMonth))
                 || ((differentMonth) && (currentDateDouble-lastUpdatedDouble > 80000000))) {
                     keepRefreshing = false;
                     VMUDisconnected = true;
@@ -303,7 +304,7 @@ public class SingleBusActivity extends AppCompatActivity {
                     });
                 }
 
-                //if buses haven't been updated for 10+ days
+                //case 1: if buses haven't been updated for 10+ days
                 if(VMUDisconnected) {
                     if(busStatus.equalsIgnoreCase("Buses in depot")) {
                         runOnUiThread(new Runnable() {
@@ -313,7 +314,7 @@ public class SingleBusActivity extends AppCompatActivity {
                                         "Depot: " + busDepot + "\n\n " +
                                         "Last known location:\n in " + busDepot + " DEPOT\n" +
                                         "Location last updated:\n" + lastUpdated
-                                        + "\n\nVMU GPS device has been disconnected.\nLive data not available.");
+                                        + "\n\nGPS device is currently offline.");
                             }
                         });
                     }
@@ -326,19 +327,14 @@ public class SingleBusActivity extends AppCompatActivity {
                                         "Depot: " + busDepot + "\n\n " +
                                         "Last known location:\n" + finalBusLandmark +
                                         "\nLocation last updated:\n" + lastUpdated
-                                        + "\n\nVMU GPS device has been disconnected.\nLive data not available.");
+                                        + "\n\nGPS device is currently offline.");
                             }
                         });
                     }
                 }
-                //if flag=21 gives something but flag=13 gives nothing
+
+                // case 2: if flag=21 was updated in 10 days but flag=13 gives nothing
                 else if(!weHaveStopsData) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showAllStopsButton.setVisibility(View.INVISIBLE);
-                        }
-                    });
                     if(busStatus.equalsIgnoreCase("Buses in depot")) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -365,14 +361,15 @@ public class SingleBusActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    //we have both GPS data and STOPS data (STOPS may not be current)
+                    //case 3: both links have some result. need to check if flag=13 is live.
+
                     String[] stopsDataFormattedArray = stopsDataUnformattedString.split(";");
                     source = stopsDataFormattedArray[0].split(",")[1];
                     destination = stopsDataFormattedArray[stopsDataFormattedArray.length - 1].split(",")[1];
 
                     int lastSeenAtStopIndex = 12345;
                     for (int i = (stopsDataFormattedArray.length)-1; i >=0; i--) {
-                        String singleStopData[] = stopsDataFormattedArray[i].split(",");
+                        String[] singleStopData = stopsDataFormattedArray[i].split(",");
                         if (singleStopData[2].equals("Y")) {
                             lastSeenAtStopIndex = i;
                             break;
@@ -380,8 +377,7 @@ public class SingleBusActivity extends AppCompatActivity {
                     }
 
                     //now starts the various conditions
-
-                    //if bus is in depot
+                    //case 3. i: if bus is in depot
                     if(busStatus.equalsIgnoreCase("Buses in Depot")) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -395,9 +391,9 @@ public class SingleBusActivity extends AppCompatActivity {
                         });
                     }
 
-                    //oute data is wrong (bus hasn't even passed a single stop on the set route).
+                    //case 3. ii:
+                    //flag=13 data is wrong (not a single stop passed || last stop is Y).
                     //so, display as if no stop data
-                    //the condition after the || indicates a rare case where the last stop is counted as PASSED
                     else if(lastSeenAtStopIndex == 12345 ||
                             lastSeenAtStopIndex == (stopsDataFormattedArray.length)-1) {
                         final String finalBusLandmark2 = busLandmark;
@@ -412,7 +408,8 @@ public class SingleBusActivity extends AppCompatActivity {
                         });
                     }
 
-                    //bus has been on SOME of the stops on the programmed route.
+                    //case 3. iii:
+                    //bus has been on SOME of the stops on the programmed route (not last stop).
                     //we now need to see if the bus is still on that route
                     else {
                         nextStop = stopsDataFormattedArray[lastSeenAtStopIndex + 1].split(",")[1];
@@ -438,15 +435,15 @@ public class SingleBusActivity extends AppCompatActivity {
                         lastSeenTimeString = lastSeenTimeString.substring(11,19);
                     /*if last seen stop was more than 10 mins ago
                         and there is no ETA for the next stop
-                        and the bus is not an airport bus
+                        and it is not an airport bus
                         then bus is probably on a different route, so display as if no stop data*/
                         if(((sameHour && timeDifference >= 1000)
                                 ||
                                 (!sameHour && sameDay && timeDifference >= 5000)
                                         || (!sameDay && timeDifference >= 765000))
                                 && (nextStopEta.equalsIgnoreCase("null"))
-                                && (!destination.contains("AIRPORT") && !destination.contains("PUSHPAK"))
-                                && (!source.contains("AIRPORT") && !source.contains("PUSHPAK"))) {
+                                && (!destination.contains("AIRPORT"))
+                                && (!source.contains("AIRPORT"))) {
                             final String finalBusLandmark3 = busLandmark;
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -511,34 +508,32 @@ public class SingleBusActivity extends AppCompatActivity {
         }//run()
     }
 
-    private class PopulateDictionary extends Thread {
+    private class GetBusIDString extends Thread {
         public void run() {
-            String urlContent = null;
-            try {
-                urlContent = getContentFromURL(new URL("https://raw.githubusercontent.com/FaraazAshraf/tsrtc-tracking/master/tsrtc-buses"));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
 
-            String fileContentsArray[] = urlContent.split(";");
+            for(int i = 0; i < busIdDepotType.length; i++) {
+                String[] regAndID = busIdDepotType[i].split(",");
 
-            for(int i = 0; i < fileContentsArray.length; i++) {
-                String regAndID[] = fileContentsArray[i].split(",");
-                busesAndIDs.put(regAndID[0], regAndID[1]);
+                if(regAndID[0].equals(busRegNumString)) {
+                    busIDString = regAndID[1];
+                    busDepot = regAndID[2];
+                    busType = regAndID[3].toUpperCase();
+                }
             }
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    busIDTextView.setText("Bus ID:\n" + busesAndIDs.get(busRegNumStringWrong));
-                    if(connectedToInternet())
-                        new GetBusData(busesAndIDs.get(busRegNumStringWrong)).start();
+                    busIDTextView.setText("Bus ID:\n" + busIDString);
+                    if(connectedToInternet()) {
+                        new GetBusData().start();
+                        keepRefreshing = true;
+                        new Refresh10Sec().start();
+                    }
                     else {
-                        Toast.makeText(SingleBusActivity.this, "Internet problem, try again.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SingleBusActivity.this, "Network error", Toast.LENGTH_SHORT).show();
                         finish();
                     }
-                    keepRefreshing = true;
-                    new Refresh10Sec().start();
                 }
             });
 
@@ -552,7 +547,7 @@ public class SingleBusActivity extends AppCompatActivity {
             }
             else {
                 String favouriteBuses = sharedPref.getString("favouriteBuses", "No records found.");
-                if(favouriteBuses.contains(busesAndIDs.get(busRegNumStringWrong) + ";")) {
+                if(favouriteBuses.contains(busIDString + ";")) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -574,7 +569,7 @@ public class SingleBusActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

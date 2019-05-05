@@ -23,6 +23,10 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
 
     LinearLayout linearLayout;
 
+    String[] busIdDepotType;
+
+    Button clearFavouritesButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,28 +42,44 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
 
         linearLayout = findViewById(R.id.favouritesLinearLayout);
 
-        TextView noFavouritesTextView = findViewById(R.id.noFavouritesTextView);
+        final TextView noFavouritesTextView = findViewById(R.id.noFavouritesTextView);
 
         String preference_file_key = "com.ashraf.faraa.livebus.sharedPrefs";
 
         SharedPreferences sharedPref;
         sharedPref = this.getSharedPreferences(preference_file_key, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
+
+        clearFavouritesButton = findViewById(R.id.clearFavouritesButton);
+        clearFavouritesButton.setVisibility(View.INVISIBLE);
+        clearFavouritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor.putString("favouriteBuses", "");
+                editor.apply();
+                linearLayout.removeAllViews();
+                noFavouritesTextView.setVisibility(View.VISIBLE);
+                clearFavouritesButton.setVisibility(View.INVISIBLE);
+            }
+        });
 
         if(!sharedPref.contains("favouriteBuses")) {
             noFavouritesTextView.setVisibility(View.VISIBLE);
         }
         else {
-            if(sharedPref.getString("favouriteBuses", "DEFAULT").equals("") || sharedPref.getString("favouriteBuses", "DEFAULT").equals("DEFAULT")) {
+            if(sharedPref.getString("favouriteBuses", "DEFAULT").equals("") || sharedPref.getString("favouriteBuses", "DEFAULT").equals("DEFAULT") || sharedPref.getString("favouriteBuses", "DEFAULT").equals("No records found.")) {
                 noFavouritesTextView.setVisibility(View.VISIBLE);
             }
             else {
+                busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
+                clearFavouritesButton.setVisibility(View.VISIBLE);
                 new ShowFavourites(sharedPref.getString("favouriteBuses", "DEFAULT")).start();
             }
         }
     }
     private class ShowFavourites extends Thread {
 
-        String busIDs[];
+        String[] busIDs;
 
         ShowFavourites(String busIDs) {
             this.busIDs = busIDs.split(";");
@@ -74,36 +94,25 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                String busRegNum = busDetails.split(",")[0].toUpperCase();
+                if(busDetails.equals("No records found."))
+                    continue;
+
+                String busRegNum = null;
+                String busType = null;
+
+                for(int j = 0; j < busIdDepotType.length; j++) {
+                    String[] singleSavedBus = busIdDepotType[j].split(",");
+                    if(singleSavedBus[1].equals(busID)) {
+                        busRegNum = singleSavedBus[0];
+                        busType = singleSavedBus[3].toUpperCase();
+                    }
+                }
+
                 String busLocation = busDetails.split(",")[4].split("from")[1];
                 String busStatus = busDetails.split(",")[10];
-                String busType = busDetails.split(",")[9].replace("Indra", "RAJADHANI").toUpperCase();
                 String busDepot = busDetails.split(",")[8];
 
                 final Button b = new Button(ViewFavouriteBusesActivity.this);
-
-                if(busRegNum.equals("AP11Z6086") || busRegNum.equals("AP11Z6087") ||
-                        busRegNum.equals("AP11Z6084") || busRegNum.equals("AP11Z6093") ||
-                        busRegNum.equals("AP11Z6096")
-                        || busRegNum.contains("TS10")) {
-                    busType = "METRO LUXURY AC";
-                }
-
-                busRegNum = busRegNum.replace("AP11Z3998", "TS07Z3998").replace("AP11Z4017", "TS07Z4017")
-                        .replace("AP11Z4015", "TS07Z4015").replace("AP11Z4040", "TS07Z4040")
-                        .replace("AP11Z4041", "TS07Z4041").replace("AP11Z4046", "TS07Z4046")
-                        .replace("AP11Z4039", "TS07Z4039").replace("AP7Z4004", "TS07Z4004")
-                        .replace("AP7Z4020", "TS07Z4020").replace("AP07Z4008", "TS07Z4008");
-
-                if(busRegNum.equals("TS07Z4024") || busRegNum.equals("TS07Z4023") ||
-                        busRegNum.equals("TS07Z4001") || busRegNum.equals("TS07Z4053") ||
-                        busRegNum.equals("TS07Z4031") || busRegNum.equals("TS07Z4030")
-                        || busRegNum.equals("TS07Z4002") || busRegNum.equals("TS07Z4034")
-                        || busRegNum.equals("TS07Z4056") || busRegNum.equals("TS07Z4046")
-                        || busRegNum.equals("TS07Z4041") || busRegNum.equals("TS07Z4040")
-                        || busRegNum.equals("TS07Z4039")) {
-                    busType = "METRO DELUXE";
-                }
 
                 String buttonText;
 
@@ -115,7 +124,7 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                 else {
                     buttonText = ("\n" + busRegNum + "   -   " + busType + "\n" +
                             "Depot: " + busDepot + "\n" +
-                            "Last seen: near " + busLocation + "\n");
+                            "Last seen: near" + busLocation + "\n");
                 }
 
                 b.setText(buttonText);
@@ -126,7 +135,7 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                 } else if (busType.equals("METRO DELUXE") || busType.contains("GARUDA") || busType.equals("RAJADHANI")) {
                     b.setBackgroundResource(R.drawable.deluxe_bg);
                     b.setTextColor(Color.WHITE);
-                } else if (busType.contains("LOW FLOOR") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
+                } else if (busType.equals("LOW FLOOR AC") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
                     b.setBackgroundResource(R.drawable.lf_bg);
                     b.setTextColor(Color.WHITE);
                 } else if (busType.equals("DELUXE") || busType.equals("VENNELA") || busType.equals("METRO LUXURY AC")) {
@@ -139,6 +148,7 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Intent singleBusIntent = new Intent(ViewFavouriteBusesActivity.this, SingleBusActivity.class);
                         singleBusIntent.putExtra("busRegNumString", busRegNumString);
+                        singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
                         startActivity(singleBusIntent);
                     }
                 });
@@ -154,7 +164,7 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 

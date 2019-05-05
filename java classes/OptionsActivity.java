@@ -87,30 +87,40 @@ public class OptionsActivity extends AppCompatActivity {
         Button locateStopsButton = findViewById(R.id.openLocateStopsButton);
         Button viewFavouritesButton = findViewById(R.id.viewFavouritesButton);
 
+        final String[] busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
+
         numberplateSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, NumberplateSearchActivity.class));
+                Intent optionsToNumberplateSearchIntent = new Intent(OptionsActivity.this, NumberplateSearchActivity.class);
+                optionsToNumberplateSearchIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionsToNumberplateSearchIntent);
             }
         });
 
         busTypeSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, BusTypeDepotSearchActivity.class));
+                Intent optionsToTypeDepotSearchIntent = new Intent(OptionsActivity.this, BusTypeDepotSearchActivity.class);
+                optionsToTypeDepotSearchIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionsToTypeDepotSearchIntent);
             }
         });
 
         stopSearchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, SearchBusesOnStopActivity.class));
+                Intent optionsToStopSearchIntent = new Intent(OptionsActivity.this, SearchBusesOnStopActivity.class);
+                optionsToStopSearchIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionsToStopSearchIntent);
             }
         });
 
         routeNumSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, SearchBusesOnRouteActivity.class));
+                Intent optionsToRouteSearchIntent = new Intent(OptionsActivity.this, SearchBusesOnRouteActivity.class);
+                optionsToRouteSearchIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionsToRouteSearchIntent);
             }
         });
         timingsSearchButton.setOnClickListener(new View.OnClickListener() {
@@ -128,7 +138,9 @@ public class OptionsActivity extends AppCompatActivity {
         viewFavouritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, ViewFavouriteBusesActivity.class));
+                Intent optionsToViewFavouritesIntent = new Intent(OptionsActivity.this, ViewFavouriteBusesActivity.class);
+                optionsToViewFavouritesIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionsToViewFavouritesIntent);
             }
         });
 
@@ -150,7 +162,7 @@ public class OptionsActivity extends AppCompatActivity {
     }
 
     private String getContentFromURL(URL url) {
-        String urlContent = new String();
+        String urlContent = "";
 
         URLConnection con = null;
 
@@ -279,7 +291,7 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(Integer.parseInt(urlContent) <= 43) {
+            if(Integer.parseInt(urlContent) <= 47) {
                 //do nothing because newest version
             }
             else {
