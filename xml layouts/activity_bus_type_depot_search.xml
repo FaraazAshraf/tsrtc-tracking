@@ -88,7 +88,7 @@
         android:id="@+id/busTypeDepotSearchButton"
         android:layout_width="103dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/std_button"
+        android:background="@drawable/solid_blue_button_bg"
         android:text="Search"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"

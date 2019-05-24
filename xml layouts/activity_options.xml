@@ -78,7 +78,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="10dp"
-                    android:text="Search for buses using:"
+                    android:text="Search for buses:"
                     android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -101,7 +101,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/search_icon"
                     android:text="reg. num"
                     android:textColor="@android:color/white"
@@ -119,9 +119,9 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/search_icon"
-                    android:text="bus type,\ndepot"
+                    android:text="class,\ndepot"
                     android:textColor="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/centerButtonsTextView"
@@ -136,11 +136,12 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/search_icon"
                     android:text="bus stop"
                     android:textColor="@android:color/white"
                     app:layout_constraintEnd_toStartOf="@+id/centerButtonsTextView"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/openNumberplateSearchButton" />
 
@@ -153,7 +154,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/search_icon"
                     android:text="route num"
                     android:textColor="@android:color/white"
@@ -161,17 +162,52 @@
                     app:layout_constraintStart_toEndOf="@+id/centerButtonsTextView"
                     app:layout_constraintTop_toBottomOf="@+id/openBusTypeDepotSearchButton" />
 
+                <Button
+                    android:id="@+id/airportLinerSearchButton"
+                    android:layout_width="0dp"
+                    android:layout_height="75dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/airport_liner_button_bg"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:text="pushpak\nairport liner"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintEnd_toStartOf="@+id/centerButtonsTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/openStopSearchButton" />
+
+                <Button
+                    android:id="@+id/viewFavouritesButton"
+                    android:layout_width="0dp"
+                    android:layout_height="75dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/fav_true_golden_button_bg"
+                    android:drawableLeft="@drawable/search_icon"
+                    android:text="favourites"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/centerButtonsTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/openRouteNumSearchButton" />
+
+
                 <TextView
                     android:id="@+id/otherInformationTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginTop="70dp"
+                    android:layout_marginTop="50dp"
                     android:text="Other information:"
                     android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/openStopSearchButton" />
+                    app:layout_constraintTop_toBottomOf="@+id/airportLinerSearchButton" />
 
                 <Button
                     android:id="@+id/openTimingsSearchButton"
@@ -182,27 +218,13 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginRight="20dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/search_icon"
                     android:text="timings"
                     android:textColor="@android:color/white"
                     app:layout_constraintEnd_toStartOf="@+id/centerButtonsTextView"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/otherInformationTextView" />
-
-                <Button
-                    android:id="@+id/viewFavouritesButton"
-                    android:layout_width="168dp"
-                    android:layout_height="75dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/fav_true"
-                    android:drawableLeft="@drawable/search_icon"
-                    android:text="view\nfavourites"
-                    android:textColor="@android:color/black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/openTimingsSearchButton" />
 
                 <Button
                     android:id="@+id/openLocateStopsButton"
@@ -213,7 +235,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/std_button"
+                    android:background="@drawable/solid_blue_button_bg"
                     android:drawableLeft="@drawable/gps_icon"
                     android:text="locate\nstops"
                     android:textColor="@android:color/white"

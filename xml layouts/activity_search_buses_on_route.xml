@@ -63,7 +63,7 @@
         android:id="@+id/routeNumSearchButton"
         android:layout_width="103dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/std_button"
+        android:background="@drawable/solid_blue_button_bg"
         android:padding="10dp"
         android:text="search"
         android:textColor="@android:color/white"

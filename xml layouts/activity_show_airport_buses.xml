@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LocateStopsActivity">
+    tools:context=".ShowAirportBusesActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
@@ -42,78 +42,76 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <AutoCompleteTextView
-        android:id="@+id/locateStopsACTV"
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/showAirportBusesProgressBar">
+
+        <LinearLayout
+            android:id="@+id/airportBusesLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/airportBusesSearchingTextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
-        android:hint="Choose a stop to locate:"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:textSize="14sp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBar" />
 
-    <Button
-        android:id="@+id/locateSingleStopSearchButton"
-        android:layout_width="150dp"
-        android:layout_height="65dp"
-        android:background="@drawable/solid_blue_button_bg"
-        android:drawableLeft="@drawable/gps_icon"
-        android:text="locate"
-        android:textColor="@android:color/white"
+    <ProgressBar
+        android:id="@+id/showAirportBusesProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:max="100"
+        android:progress="0"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/locateStopsACTV" />
+        app:layout_constraintTop_toBottomOf="@+id/airportBusesSearchingTextView" />
 
     <TextView
-        android:id="@+id/orTextView"
+        android:id="@+id/noAirportBusesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="or"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Sorry, no buses found."
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locateSingleStopSearchButton" />
-
-    <Button
-        android:id="@+id/searchMyLocationButton"
-        android:layout_width="150dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/solid_blue_button_bg"
-        android:drawableLeft="@drawable/gps_icon"
-        android:padding="10dp"
-        android:text="get stops\nnear me"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/orTextView" />
-
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/locateSingleStopSearchButton">
-
-        <LinearLayout
-            android:id="@+id/locateStopsLinearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+        app:layout_constraintTop_toTopOf="@+id/toolBar"
+        tools:visibility="invisible" />
 
 </android.support.constraint.ConstraintLayout>

@@ -93,7 +93,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/std_button"
+        android:background="@drawable/solid_blue_button_bg"
         android:padding="10dp"
         android:text="Clear all\nfavourites"
         android:textColor="@android:color/white"

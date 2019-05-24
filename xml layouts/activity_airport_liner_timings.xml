@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NumberplateSearchActivity">
+    tools:context=".AirportLinerTimingsActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
@@ -42,43 +42,15 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <AutoCompleteTextView
-        android:id="@+id/allBusesACTV"
+    <com.ortiz.touchview.TouchImageView
+        android:id="@+id/img1"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:hint="Search by numberplate: ex. TS07Z3998"
+        android:layout_height="0dp"
+        android:src="@drawable/airport_timings_final_min_min"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBar" />
 
-    <Button
-        android:id="@+id/numberplateSearchButton"
-        android:layout_width="103dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/solid_blue_button_bg"
-        android:text="Search"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/allBusesACTV" />
-
-    <TextView
-        android:id="@+id/loadingNumberplatesTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/allBusesACTV" />
 
 </android.support.constraint.ConstraintLayout>

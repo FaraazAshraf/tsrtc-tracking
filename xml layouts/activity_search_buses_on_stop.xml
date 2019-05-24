@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="@drawable/std_button"
+        android:background="@drawable/solid_blue_button_bg"
         android:drawableLeft="@drawable/search_icon"
         android:text="search  "
         android:textColor="@android:color/white"

@@ -49,7 +49,7 @@
         android:layout_below="@id/feedbackEditText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:background="@drawable/std_button"
+        android:background="@drawable/solid_blue_button_bg"
         android:drawableLeft="@drawable/feedback_icon"
         android:text="Submit\nfeedback"
         android:textColor="@android:color/white"
