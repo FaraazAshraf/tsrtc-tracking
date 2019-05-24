@@ -334,16 +334,16 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                                                 final Button b = new Button(SearchBusesOnRouteActivity.this);
                                                 b.setText(buttonText);
                                                 if (busType.equals("METRO EXPRESS")) {
-                                                    b.setBackgroundResource(R.drawable.express_bg);
+                                                    b.setBackgroundResource(R.drawable.blue_button_bg);
                                                     b.setTextColor(Color.WHITE);
                                                 } else if (busType.equals("METRO DELUXE")) {
-                                                    b.setBackgroundResource(R.drawable.deluxe_bg);
+                                                    b.setBackgroundResource(R.drawable.green_button_bg);
                                                     b.setTextColor(Color.WHITE);
                                                 } else if (busType.equals("LOW FLOOR AC")) {
-                                                    b.setBackgroundResource(R.drawable.lf_bg);
+                                                    b.setBackgroundResource(R.drawable.red_button_bg);
                                                     b.setTextColor(Color.WHITE);
                                                 } else if (busType.equals("METRO LUXURY AC")) {
-                                                    b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                                                    b.setBackgroundResource(R.drawable.pink_button_bg);
                                                     b.setTextColor(Color.WHITE);
                                                 }
                                                 final String finalBusRegNum = busRegNum;
@@ -459,16 +459,16 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                                     final Button b = new Button(SearchBusesOnRouteActivity.this);
                                     b.setText(buttonText);
                                     if (busType.equals("METRO EXPRESS")) {
-                                        b.setBackgroundResource(R.drawable.express_bg);
+                                        b.setBackgroundResource(R.drawable.blue_button_bg);
                                         b.setTextColor(Color.WHITE);
                                     } else if (busType.equals("METRO DELUXE")) {
-                                        b.setBackgroundResource(R.drawable.deluxe_bg);
+                                        b.setBackgroundResource(R.drawable.green_button_bg);
                                         b.setTextColor(Color.WHITE);
                                     } else if (busType.equals("LOW FLOOR AC")) {
-                                        b.setBackgroundResource(R.drawable.lf_bg);
+                                        b.setBackgroundResource(R.drawable.red_button_bg);
                                         b.setTextColor(Color.WHITE);
                                     } else if(busType.equals("METRO LUXURY AC")) {
-                                        b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                                        b.setBackgroundResource(R.drawable.pink_button_bg);
                                         b.setTextColor(Color.WHITE);
                                     }
 

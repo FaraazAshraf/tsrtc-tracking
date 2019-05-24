@@ -219,19 +219,19 @@ public class TimingsActivity extends AppCompatActivity {
                             "\nROUTE: " + route + "\n");
 
                     if(busType.equals("METRO DELUXE") || busType.equals("INDRA") || busType.contains("GARUDA")) {
-                        b.setBackgroundResource(R.drawable.deluxe_bg);
+                        b.setBackgroundResource(R.drawable.green_button_bg);
                         b.setTextColor(Color.WHITE);
                     }
                     else if(busType.equals("METRO LUXURY AC") || busType.equals("DELUXE")) {
-                        b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                        b.setBackgroundResource(R.drawable.pink_button_bg);
                         b.setTextColor(Color.WHITE);
                     }
                     else if(busType.contains("EXPRESS")) {
-                        b.setBackgroundResource(R.drawable.express_bg);
+                        b.setBackgroundResource(R.drawable.blue_button_bg);
                         b.setTextColor(Color.WHITE);
                     }
                     else {
-                        b.setBackgroundResource(R.drawable.lf_bg);
+                        b.setBackgroundResource(R.drawable.red_button_bg);
                         b.setTextColor(Color.WHITE);
                     }
 

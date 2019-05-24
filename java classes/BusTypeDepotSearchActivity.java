@@ -287,26 +287,26 @@ public class BusTypeDepotSearchActivity extends AppCompatActivity {
                             b.setText(buttonText);
 
                             if (busType.contains("EXPRESS")) {
-                                b.setBackgroundResource(R.drawable.express_bg);
+                                b.setBackgroundResource(R.drawable.blue_button_bg);
                                 b.setTextColor(Color.WHITE);
                             } else if (busType.equals("METRO DELUXE") || busType.contains("GARUDA") || busType.equals("RAJADHANI")) {
-                                b.setBackgroundResource(R.drawable.deluxe_bg);
+                                b.setBackgroundResource(R.drawable.green_button_bg);
                                 b.setTextColor(Color.WHITE);
                             } else if (busType.equals("LOW FLOOR AC") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
-                                b.setBackgroundResource(R.drawable.lf_bg);
+                                b.setBackgroundResource(R.drawable.red_button_bg);
                                 b.setTextColor(Color.WHITE);
                             } else if (busType.equals("DELUXE") || busType.equals("VENNELA") || busType.equals("METRO LUXURY AC")) {
-                                b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                                b.setBackgroundResource(R.drawable.pink_button_bg);
                                 b.setTextColor(Color.WHITE);
                             }
 
-                            final String busRegNumString = singleBus[0];
+                            final String finalBusRegNum = busRegNum;
                             b.setOnClickListener(new View.OnClickListener() {
                                 public void onClick(View v) {
                                     continueSearching = false;
                                     searchInProgress = false;
                                     Intent singleBusIntent = new Intent(BusTypeDepotSearchActivity.this, SingleBusActivity.class);
-                                    singleBusIntent.putExtra("busRegNumString", busRegNumString);
+                                    singleBusIntent.putExtra("busRegNumString", finalBusRegNum);
                                     singleBusIntent.putExtra("busIdDepotType", busIdDepotType);
                                     startActivity(singleBusIntent);
                                 }

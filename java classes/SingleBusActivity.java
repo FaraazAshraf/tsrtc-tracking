@@ -269,7 +269,7 @@ public class SingleBusActivity extends AppCompatActivity {
                 gpsButton.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         //startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://www.google.com/maps/place/"+gpsCoords+"/@"+gpsCoords+",12z")));
-                        Intent tracking = new Intent(SingleBusActivity.this, ViewLocationActivity.class);
+                        Intent tracking = new Intent(SingleBusActivity.this, GPSActivity.class);
                         tracking.putExtra("busID", busIDString);
                         startActivity(tracking);
                     }

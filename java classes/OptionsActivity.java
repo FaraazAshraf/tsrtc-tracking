@@ -86,6 +86,7 @@ public class OptionsActivity extends AppCompatActivity {
         Button timingsSearchButton = findViewById(R.id.openTimingsSearchButton);
         Button locateStopsButton = findViewById(R.id.openLocateStopsButton);
         Button viewFavouritesButton = findViewById(R.id.viewFavouritesButton);
+        Button airportLinerSearchButton = findViewById(R.id.airportLinerSearchButton);
 
         final String[] busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
 
@@ -123,18 +124,7 @@ public class OptionsActivity extends AppCompatActivity {
                 startActivity(optionsToRouteSearchIntent);
             }
         });
-        timingsSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, TimingsActivity.class));
-            }
-        });
-        locateStopsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OptionsActivity.this, LocateStopsActivity.class));
-            }
-        });
+
         viewFavouritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,6 +133,31 @@ public class OptionsActivity extends AppCompatActivity {
                 startActivity(optionsToViewFavouritesIntent);
             }
         });
+
+        airportLinerSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent optionToAirportIntent = new Intent(OptionsActivity.this, AirportLinerActivity.class);
+                optionToAirportIntent.putExtra("busIdDepotType", busIdDepotType);
+                startActivity(optionToAirportIntent);
+            }
+        });
+
+        timingsSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OptionsActivity.this, TimingsActivity.class));
+            }
+        });
+
+        locateStopsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OptionsActivity.this, LocateStopsActivity.class));
+            }
+        });
+
+
 
     }
     public void onBackPressed() {
@@ -291,7 +306,7 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(Integer.parseInt(urlContent) <= 47) {
+            if(Integer.parseInt(urlContent) <= 54) {
                 //do nothing because newest version
             }
             else {

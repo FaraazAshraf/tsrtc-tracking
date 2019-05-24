@@ -50,8 +50,7 @@ public class AllStopsActivity extends AppCompatActivity {
 
         titleTextView.setText("Searching...");
 
-        new AllStops(busIDString).start();
-        new Refresh10Sec().start();
+        new RefreshStops10Sec().start();
 
     }
 
@@ -69,18 +68,13 @@ public class AllStopsActivity extends AppCompatActivity {
         super.onResume();
         if(!keepRefreshing) {
             keepRefreshing = true;
-            new Refresh10Sec().start();
+            new RefreshStops10Sec().start();
         }
     }
 
-    public class Refresh10Sec extends Thread {
+    public class RefreshStops10Sec extends Thread {
         public void run() {
             while(keepRefreshing) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 if(keepRefreshing) {
                     runOnUiThread(new Runnable() {
                         @Override

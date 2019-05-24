@@ -1,10 +1,12 @@
 package com.ashraf.faraa.livebus;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -55,11 +57,34 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
         clearFavouritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor.putString("favouriteBuses", "");
-                editor.apply();
-                linearLayout.removeAllViews();
-                noFavouritesTextView.setVisibility(View.VISIBLE);
-                clearFavouritesButton.setVisibility(View.INVISIBLE);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(ViewFavouriteBusesActivity.this)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Clear favourites?")
+                                .setMessage("Are you sure you want to clear all favourites? This action cannot be undone.")
+                                .setCancelable(false)
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                                {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        editor.putString("favouriteBuses", "");
+                                        editor.apply();
+                                        linearLayout.removeAllViews();
+                                        noFavouritesTextView.setVisibility(View.VISIBLE);
+                                        clearFavouritesButton.setVisibility(View.INVISIBLE);
+                                    }
+
+                                }).show();
+                    }
+                });
             }
         });
 
@@ -72,7 +97,6 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
             }
             else {
                 busIdDepotType = getIntent().getExtras().getStringArray("busIdDepotType");
-                clearFavouritesButton.setVisibility(View.VISIBLE);
                 new ShowFavourites(sharedPref.getString("favouriteBuses", "DEFAULT")).start();
             }
         }
@@ -130,16 +154,16 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                 b.setText(buttonText);
 
                 if (busType.contains("EXPRESS")) {
-                    b.setBackgroundResource(R.drawable.express_bg);
+                    b.setBackgroundResource(R.drawable.blue_button_bg);
                     b.setTextColor(Color.WHITE);
                 } else if (busType.equals("METRO DELUXE") || busType.contains("GARUDA") || busType.equals("RAJADHANI")) {
-                    b.setBackgroundResource(R.drawable.deluxe_bg);
+                    b.setBackgroundResource(R.drawable.green_button_bg);
                     b.setTextColor(Color.WHITE);
                 } else if (busType.equals("LOW FLOOR AC") || busType.equals("SUPER LUXURY") || busType.equals("CITY ORDINARY") || busType.equals("HI TECH")) {
-                    b.setBackgroundResource(R.drawable.lf_bg);
+                    b.setBackgroundResource(R.drawable.red_button_bg);
                     b.setTextColor(Color.WHITE);
                 } else if (busType.equals("DELUXE") || busType.equals("VENNELA") || busType.equals("METRO LUXURY AC")) {
-                    b.setBackgroundResource(R.drawable.deluxe_ld_bg);
+                    b.setBackgroundResource(R.drawable.pink_button_bg);
                     b.setTextColor(Color.WHITE);
                 }
 
@@ -160,6 +184,12 @@ public class ViewFavouriteBusesActivity extends AppCompatActivity {
                     }
                 });
             }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    clearFavouritesButton.setVisibility(View.VISIBLE);
+                }
+            });
         }
     }
 
