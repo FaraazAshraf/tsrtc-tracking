@@ -1,5 +1,6 @@
 // includes APSRTC depots
 // not comprehensive
+// GHZ: 2, 3, 6, 15-39, 227
 
 2,MUSHEERABAD 2; //GHZ
 3,MIYAPUR 2; //GHZ
