@@ -306,7 +306,7 @@ public class OptionsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             String urlContent = getContentFromURL(url);
-            if(Integer.parseInt(urlContent) <= 54) {
+            if(Integer.parseInt(urlContent) <= 55) {
                 //do nothing because newest version
             }
             else {

@@ -75,7 +75,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
             if(connectedToInternet()) {
                 try {
-                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=name,fafafafa@fsfsfsfs.com,9534343434," + feedback + ",0,3,mobile,0,67&flag=15");
+                    url = new URL("http://125.16.1.204:8080/bats/appQuery.do?query=0,0,0," + feedback + ",0,10,0,0,67&flag=15");
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
