@@ -27,6 +27,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
 
     ArrayList<String> checkedBuses;
     ArrayList<String> validRoutes;
+    ArrayList<String> addedIDs;
 
     String[] busIdDepotType;
 
@@ -65,6 +66,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
         busesLinearLayout = findViewById(R.id.linearLayout);
         checkedBuses = new ArrayList<>();
         validRoutes = new ArrayList<>();
+        addedIDs = new ArrayList<>();
 
         keepScanning = true;
 
@@ -91,6 +93,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                         noBusesTextView.setVisibility(View.INVISIBLE);
                         checkedBuses.clear();
                         validRoutes.clear();
+                        addedIDs.clear();
                         noBusesFound = true;
                         busesLinearLayout.removeAllViews();
                         keepScanning = true;
@@ -153,7 +156,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                 String currentRouteNum = subRoute.split(",")[1].toUpperCase();
                 String currentRouteID = subRoute.split(",")[0];
 
-                if(currentRouteNum.contains(chosenRoute) && !validRoutes.contains(currentRouteID + ",")
+                if(currentRouteNum.contains(chosenRoute) && !addedIDs.contains(currentRouteID)
                 && ((chosenRoute.length() >= 3
                         || (chosenRoute.length() <= 2 && currentRouteNum.length() == chosenRoute.length())
                         || (chosenRoute.length() <= 2 && currentRouteNum.substring(currentRouteNum.indexOf(chosenRoute) + chosenRoute.length()).length() >= 1 && currentRouteNum.indexOf(chosenRoute) == 0 && !((int)currentRouteNum.charAt(chosenRoute.length()) >= (int)'0' && (int)currentRouteNum.charAt(chosenRoute.length()) <= (int)'9'))
@@ -168,6 +171,7 @@ public class SearchBusesOnRouteActivity extends AppCompatActivity {
                         //if only previous chars exist it should not be a number
                         //if both exist neither should be a number
                     validRoutes.add(subRoute);
+                    addedIDs.add(currentRouteID);
                 }
             }
 
