@@ -1,1 +1,1 @@
-Notice;All servers are currently down. Using the app may cause it to crash. I have temporarily removed the app from Play Store due to huge number of crash reports because of server outage. Currently only "search by bus stop" is working.
+Notice;I have found out that the URLs that I was using as APIs to access the servers have been modified. It will take me some days to change the URLs for the app in an upcoming update. Until then, only "search by stop" function is working correctly. Sorry for the inconvenience.
